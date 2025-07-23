@@ -1,3 +1,5 @@
+import os
+
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 
@@ -10,7 +12,8 @@ class Agent:
         # Initialize the prompt based on role and other info
         self.prompt_template = self.create_prompt_template()
         # Initialize the model
-        self.model = ChatOpenAI(temperature=0, model="gpt-4o")
+        self.model = ChatOpenAI(temperature=0, model="gpt-4o", openai_api_key=os.getenv("OPENAI_API_KEY"),
+                                openai_organization=os.getenv("OPENAI_ORGANIZATION"))
 
     def create_prompt_template(self):
         if self.role == "MultidisciplinaryTeam":

@@ -15,5 +15,7 @@ This code is based on:
 ```
 pip install langchain -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install langchain-openai -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install langchain-community -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install python-dotenv -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install dashscope --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```

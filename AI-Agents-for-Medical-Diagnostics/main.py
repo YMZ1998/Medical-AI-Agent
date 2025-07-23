@@ -1,13 +1,7 @@
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
-from dotenv import load_dotenv
-
-from Utils.Agents import Cardiologist, Psychologist, Pulmonologist, MultidisciplinaryTeam
-
-# Loading API key from a dotenv file.
-load_dotenv(dotenv_path='.env')
+from datetime import datetime
+from Utils.QwenAgents import Cardiologist, Psychologist, Pulmonologist, MultidisciplinaryTeam
 
 # read the medical report
 with open("Medical Reports\Medical Rerort - Michael Johnson - Panic Attack Disorder.txt", "r") as file:
@@ -44,13 +38,15 @@ team_agent = MultidisciplinaryTeam(
 # Run the MultidisciplinaryTeam agent to generate the final diagnosis
 final_diagnosis = team_agent.run()
 final_diagnosis_text = "### Final Diagnosis:\n\n" + final_diagnosis
-txt_output_path = "results/final_diagnosis.txt"
+print(final_diagnosis_text)
+
+txt_output_path = f"results/final_diagnosis_{datetime.now():%Y%m%d_%H%M%S}.txt"
 
 # Ensure the directory exists
 os.makedirs(os.path.dirname(txt_output_path), exist_ok=True)
 
 # Write the final diagnosis to the text file
-with open(txt_output_path, "w") as txt_file:
+with open(txt_output_path, "w", encoding="utf-8") as txt_file:
     txt_file.write(final_diagnosis_text)
 
 print(f"Final diagnosis has been saved to {txt_output_path}")
