@@ -1,8 +1,10 @@
-# Medical-AI-Agent
+# [Medical-AI-Agent](https://github.com/YMZ1998/Medical-AI-Agent)
 
 This code is based on:
 
 [AI-Agents-for-Medical-Diagnostics](https://github.com/ahmadvh/AI-Agents-for-Medical-Diagnostics)
+
+[MMedAgent](http://github.com/Wangyixinxin/MMedAgent)
 
 ## Tools
 

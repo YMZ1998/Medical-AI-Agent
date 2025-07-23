@@ -40,7 +40,7 @@ final_diagnosis = team_agent.run()
 final_diagnosis_text = "### Final Diagnosis:\n\n" + final_diagnosis
 print(final_diagnosis_text)
 
-txt_output_path = f"results/final_diagnosis_{datetime.now():%Y%m%d_%H%M%S}.txt"
+txt_output_path = f"results/final_diagnosis_{datetime.now():%Y%m%d_%H%M%S}.md"
 
 # Ensure the directory exists
 os.makedirs(os.path.dirname(txt_output_path), exist_ok=True)

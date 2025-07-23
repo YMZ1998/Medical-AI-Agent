@@ -23,38 +23,74 @@ class Agent:
 
     def create_prompt_template(self):
         if self.role == "MultidisciplinaryTeam":
+            # template = """
+            #     Act like a multidisciplinary team of healthcare professionals.
+            #     You will receive medical reports from a Cardiologist, Psychologist, and Pulmonologist.
+            #     Task: Analyze the reports and generate a list of 3 possible health issues with explanations.
+            #
+            #     Cardiologist Report: {cardiologist_report}
+            #     Psychologist Report: {psychologist_report}
+            #     Pulmonologist Report: {pulmonologist_report}
+            # """
             template = """
-                Act like a multidisciplinary team of healthcare professionals.
-                You will receive medical reports from a Cardiologist, Psychologist, and Pulmonologist.
-                Task: Analyze the reports and generate a list of 3 possible health issues with explanations.
+                请用中文回答以下问题。
+                请扮演一个由心脏科医生、心理医生和肺病专家组成的多学科医疗团队。
+                你将收到来自这三位专家的医学报告。
+                任务：分析这些报告，并生成3个可能的健康问题及其解释。
 
-                Cardiologist Report: {cardiologist_report}
-                Psychologist Report: {psychologist_report}
-                Pulmonologist Report: {pulmonologist_report}
+                心脏科报告: {cardiologist_report}
+                心理科报告: {psychologist_report}
+                呼吸科报告: {pulmonologist_report}
             """
+
             return PromptTemplate.from_template(template)
         else:
+            # templates = {
+            #     "Cardiologist": """
+            #         Act like a cardiologist. You will receive a medical report of a patient.
+            #         Task: Review the patient's cardiac workup, including ECG, blood tests, Holter monitor results, and echocardiogram.
+            #         Focus: Identify subtle signs of cardiac issues that could explain the patient’s symptoms.
+            #         Recommendation: Provide possible causes and next steps.
+            #         Medical Report: {medical_report}
+            #     """,
+            #     "Psychologist": """
+            #         Act like a psychologist. You will receive a patient's report.
+            #         Task: Identify potential mental health issues like anxiety, depression, or trauma.
+            #         Recommendation: Provide insights and recommended next steps.
+            #         Medical Report: {medical_report}
+            #     """,
+            #     "Pulmonologist": """
+            #         Act like a pulmonologist. You will receive a patient's report.
+            #         Task: Identify possible respiratory issues such as asthma, COPD, or lung infections.
+            #         Recommendation: Suggest possible causes and further tests.
+            #         Medical Report: {medical_report}
+            #     """
+            # }
             templates = {
                 "Cardiologist": """
-                    Act like a cardiologist. You will receive a medical report of a patient.
-                    Task: Review the patient's cardiac workup, including ECG, blood tests, Holter monitor results, and echocardiogram.
-                    Focus: Identify subtle signs of cardiac issues that could explain the patient’s symptoms.
-                    Recommendation: Provide possible causes and next steps.
-                    Medical Report: {medical_report}
+                    请用中文回答以下问题。
+                    请扮演一位心脏病专家，你将收到一份病人的医学报告。
+                    任务：审查患者的心脏检查结果，包括心电图、血液检查、动态心电图和超声心动图。
+                    重点：识别可能解释患者症状的细微心脏问题。
+                    建议：提供可能的病因和下一步建议。
+                    医学报告: {medical_report}
                 """,
                 "Psychologist": """
-                    Act like a psychologist. You will receive a patient's report.
-                    Task: Identify potential mental health issues like anxiety, depression, or trauma.
-                    Recommendation: Provide insights and recommended next steps.
-                    Medical Report: {medical_report}
+                    请用中文回答以下问题。
+                    请扮演一位心理医生，你将收到一份患者的医学报告。
+                    任务：识别潜在的心理健康问题，如焦虑、抑郁或创伤。
+                    建议：提供专业见解和后续建议。
+                    医学报告: {medical_report}
                 """,
                 "Pulmonologist": """
-                    Act like a pulmonologist. You will receive a patient's report.
-                    Task: Identify possible respiratory issues such as asthma, COPD, or lung infections.
-                    Recommendation: Suggest possible causes and further tests.
-                    Medical Report: {medical_report}
+                    请用中文回答以下问题。
+                    请扮演一位肺病专家，你将收到一份患者的医学报告。
+                    任务：识别可能的呼吸系统问题，如哮喘、慢阻肺或肺部感染。
+                    建议：提出可能的病因和建议进一步检查。
+                    医学报告: {medical_report}
                 """
             }
+
             return PromptTemplate.from_template(templates[self.role])
 
     def run(self):
