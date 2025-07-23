@@ -9,3 +9,11 @@ This code is based on:
 [langchain](https://github.com/langchain-ai/langchain)
 
 [openai](https://platform.openai.com/docs/overview)
+
+## Environment
+
+```
+pip install langchain -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install langchain-openai -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install python-dotenv -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
