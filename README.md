@@ -1,1 +1,11 @@
 # Medical-AI-Agent
+
+This code is based on:
+
+[AI-Agents-for-Medical-Diagnostics](https://github.com/ahmadvh/AI-Agents-for-Medical-Diagnostics)
+
+## Tools
+
+[langchain](https://github.com/langchain-ai/langchain)
+
+[openai](https://platform.openai.com/docs/overview)
