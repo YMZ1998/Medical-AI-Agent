@@ -17,7 +17,7 @@ class Agent:
         self.prompt_template = self.create_prompt_template()
         self.model = ChatTongyi(
             dashscope_api_key=os.getenv("DASHSCOPE_API_KEY"),
-            model="qwen-turbo",
+            model="qwen-plus",
             temperature=0.3
         )
 

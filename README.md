@@ -10,6 +10,8 @@ This code is based on:
 
 [langchain](https://github.com/langchain-ai/langchain)
 
+[langchain api reference](https://python.langchain.com/api_reference/reference.html)
+
 [openai](https://platform.openai.com/docs/overview)
 
 ## Environment
