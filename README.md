@@ -16,10 +16,16 @@ This code is based on:
 
 ## Environment
 
+
 ```
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+```
+
 pip install langchain -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install langchain-openai -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install langchain-community -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install python-dotenv -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install dashscope --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install gradio==4.44.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
