@@ -14,6 +14,8 @@ This code is based on:
 
 [openai](https://platform.openai.com/docs/overview)
 
+[gradio](https://github.com/gradio-app/gradio)
+
 ## Environment
 
 
