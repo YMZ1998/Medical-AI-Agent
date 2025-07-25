@@ -7,7 +7,6 @@ from langchain_core.output_parsers import StrOutputParser
 
 load_dotenv("API.env")
 api_key = os.getenv("DASHSCOPE_API_KEY")
-print("API KEY:", api_key)
 
 llm = ChatTongyi(
     dashscope_api_key=api_key,
@@ -47,4 +46,4 @@ with gr.Blocks() as demo:
     clear.click(reset_chat, None, [chatbot, state])
 
 if __name__ == "__main__":
-    demo.launch(share=True, server_port=7862, debug=True)
+    demo.launch(share=True, server_port=5862, debug=True)

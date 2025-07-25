@@ -1,4 +1,4 @@
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain_core.documents import Document
 from langchain_community.chat_models import ChatTongyi
 from API import get_dashscope_api_key
@@ -8,8 +8,13 @@ import os
 dashscope_api_key = get_dashscope_api_key()
 
 # 2. 加载英文文档
-loader = TextLoader("./data/books/test.md", encoding="utf-8")
+loader = TextLoader("./data/test.md", encoding="utf-8")
 docs = loader.load()
+print(docs)
+
+# loader = PyPDFLoader("./data/test.pdf")
+# docs = loader.load()
+# print(docs)
 
 # 3. 初始化模型
 model = ChatTongyi(dashscope_api_key=dashscope_api_key)
@@ -25,17 +30,18 @@ def translate_text(text: str) -> str:
 output_lines = []
 for i, doc in enumerate(docs):
     original = doc.page_content.strip()
+    print(f"[{i + 1}/{len(docs)}] 原文：{original}")
     if not original:
         continue  # 跳过空行
     translated = translate_text(original)
+    print(f"[{i + 1}/{len(docs)}] 翻译：{translated}")
 
     # 拼接对照内容
-    output_lines.append(f"[段落 {i + 1} 英文]:\n{original}\n")
-    output_lines.append(f"[段落 {i + 1} 中文]:\n{translated}\n")
-    output_lines.append("-" * 50 + "\n")
+    output_lines.append(f"{original}\n\n")
+    output_lines.append(f"---\n\n{translated}\n\n")
 
 # 6. 写入对照结果文件
-output_path = "./data/books/test_translated.md"
+output_path = "./data/test_translated.md"
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 with open(output_path, "w", encoding="utf-8") as f:
     f.writelines(output_lines)

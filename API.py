@@ -15,5 +15,6 @@ def get_dashscope_api_key(env_path: str = "API.env") -> str:
     print("[✔] Dashscope API KEY 加载成功:", api_key[:6] + "..." + api_key[-4:])
     return api_key
 
+
 if __name__ == "__main__":
     key = get_dashscope_api_key()
