@@ -6,6 +6,10 @@ This code is based on:
 
 [MMedAgent](http://github.com/Wangyixinxin/MMedAgent)
 
+[langchain-mcp-adapters](https://github.com/langchain-ai/langchain-mcp-adapters)
+
+[langchain-rag-tutorial](https://github.com/pixegami/langchain-rag-tutorial)
+
 ## Tools
 
 [langchain](https://github.com/langchain-ai/langchain)
@@ -16,7 +20,6 @@ This code is based on:
 
 [gradio](https://github.com/gradio-app/gradio)
 
-[langchain-mcp-adapters](https://github.com/langchain-ai/langchain-mcp-adapters)
 
 ## Environment
 
