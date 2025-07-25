@@ -1,56 +1,77 @@
 import os
+import datetime
 from http import HTTPStatus
 import gradio as gr
 from dashscope import Application
 from API import get_dashscope_api_key
 
+# 初始化 key 和 app ID
 dashscope_api_key = get_dashscope_api_key()
 app_id = '375f8ed21d9746838e92924a5bf24fc9'
-session_id = None
+session_id = None  # 初始无会话
 
+# 日志记录函数
+def log_chat(user_input, assistant_reply):
+    log_file = "chat_log.txt"
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_entry = f"[{timestamp}]\n用户: {user_input}\n助手: {assistant_reply}\n{'-'*40}\n"
+    with open(log_file, "a", encoding="utf-8") as f:
+        f.write(log_entry)
+    print(log_entry)
+# 主对话函数
 def dashscope_chat(user_input, chat_history=[]):
     global session_id
 
-    # 构建调用参数
     call_params = {
         "api_key": dashscope_api_key,
         "app_id": app_id,
         "prompt": user_input
     }
 
-    # 若已有会话 ID，则追加进去以保持上下文
     if session_id:
         call_params["session_id"] = session_id
 
-    # 调用 DashScope 应用
     response = Application.call(**call_params)
 
-    # 错误处理
     if response.status_code != HTTPStatus.OK:
         error_message = f"[错误] code={response.status_code}, message={response.message}"
+        log_chat(user_input, error_message)
         return chat_history + [[user_input, error_message]], ""
 
-    # 更新会话 ID
     session_id = response.output.session_id
-
-    # 获取返回结果
     assistant_reply = response.output.text
 
-    # 更新聊天历史
+    log_chat(user_input, assistant_reply)
+
     chat_history.append([user_input, assistant_reply])
     return chat_history, ""
 
+# 清除对话
+def clear_chat():
+    global session_id
+    session_id = None
+    return [], "", None
 
-# Gradio 界面
+# Gradio UI
 with gr.Blocks() as demo:
-    gr.Markdown("# Stock God")
-    chatbot = gr.Chatbot()
-    msg = gr.Textbox(label="请输入问题", placeholder="例如：你是谁？")
-    clear = gr.Button("清除会话")
+    gr.Markdown("## 🤖 Stock God 聊天助手", elem_classes="title")
 
-    # 发送输入事件
+    chatbot = gr.Chatbot(label="对话窗口", height=400)
+
+    with gr.Row():
+        msg = gr.Textbox(
+            show_label=False,
+            placeholder="请输入问题，例如：你是谁？",
+            scale=8
+        )
+        send_btn = gr.Button("发送", variant="primary", scale=1)
+
+    clear_btn = gr.Button("🗑️ 清除会话", variant="secondary")
+
+    # 事件绑定
     msg.submit(dashscope_chat, [msg, chatbot], [chatbot, msg])
-    clear.click(lambda: ([], "", None), None, [chatbot, msg])
+    send_btn.click(dashscope_chat, [msg, chatbot], [chatbot, msg])
+    clear_btn.click(clear_chat, None, [chatbot, msg])
 
 if __name__ == "__main__":
     demo.launch(share=True, server_port=7862, debug=True)
