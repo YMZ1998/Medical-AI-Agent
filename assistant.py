@@ -5,20 +5,20 @@ import gradio as gr
 from dashscope import Application
 from API import get_dashscope_api_key
 
-# 初始化 key 和 app ID
 dashscope_api_key = get_dashscope_api_key()
-app_id = '375f8ed21d9746838e92924a5bf24fc9'
+app_id = os.getenv("DASHSCOPE_APP_ID")
 session_id = None  # 初始无会话
 
-# 日志记录函数
+
 def log_chat(user_input, assistant_reply):
     log_file = "chat_log.txt"
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_entry = f"[{timestamp}]\n用户: {user_input}\n助手: {assistant_reply}\n{'-'*40}\n"
+    log_entry = f"[{timestamp}]\n用户: {user_input}\n助手: {assistant_reply}\n{'-' * 40}\n"
     with open(log_file, "a", encoding="utf-8") as f:
         f.write(log_entry)
     print(log_entry)
-# 主对话函数
+
+
 def dashscope_chat(user_input, chat_history=[]):
     global session_id
 
@@ -46,13 +46,13 @@ def dashscope_chat(user_input, chat_history=[]):
     chat_history.append([user_input, assistant_reply])
     return chat_history, ""
 
-# 清除对话
+
 def clear_chat():
     global session_id
     session_id = None
     return [], "", None
 
-# Gradio UI
+
 with gr.Blocks() as demo:
     gr.Markdown("## 🤖 Stock God 聊天助手", elem_classes="title")
 
@@ -68,7 +68,6 @@ with gr.Blocks() as demo:
 
     clear_btn = gr.Button("🗑️ 清除会话", variant="secondary")
 
-    # 事件绑定
     msg.submit(dashscope_chat, [msg, chatbot], [chatbot, msg])
     send_btn.click(dashscope_chat, [msg, chatbot], [chatbot, msg])
     clear_btn.click(clear_chat, None, [chatbot, msg])

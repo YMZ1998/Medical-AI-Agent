@@ -1,11 +1,13 @@
 import os
+
 import gradio as gr
-from dotenv import load_dotenv
 from langchain_community.chat_models import ChatTongyi
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
 
-load_dotenv("API.env")
+from API import get_dashscope_api_key
+
+dashscope_api_key = get_dashscope_api_key()
 api_key = os.getenv("DASHSCOPE_API_KEY")
 
 llm = ChatTongyi(

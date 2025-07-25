@@ -1,17 +1,11 @@
 import os
 
-import dashscope
-from dotenv import load_dotenv
 from langchain.evaluation import load_evaluator
 
+from API import get_dashscope_api_key
 from embeddings import TongyiEmbeddings
 
-load_dotenv("API.env")
-os.environ['DASHSCOPE_API_KEY'] = os.getenv("DASHSCOPE_API_KEY")
-api_key = os.getenv("DASHSCOPE_API_KEY")
-print("API KEY:", os.environ['DASHSCOPE_API_KEY'])
-dashscope.api_key = os.getenv("DASHSCOPE_API_KEY")
-
+dashscope_api_key = get_dashscope_api_key()
 
 def main():
     # 初始化 Tongyi Embeddings

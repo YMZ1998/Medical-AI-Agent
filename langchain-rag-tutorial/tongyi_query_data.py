@@ -27,7 +27,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("query_text", nargs="?", help="The query text.")
     args = parser.parse_args()
-    args.query_text = "What does the cat do in the morning?"
+    # args.query_text = "What does the cat do in the morning?"
+    args.query_text = "这只猫每天早上干什么？"
     if args.query_text is None:
         query_text = input("请输入你要查询的问题：")
     else:
@@ -51,8 +52,8 @@ def main():
         print(f"向量搜索失败：{e}")
         return
 
-    print(results)
     score = results[0][1]
+    print("score: ", score)
     # if score is None or score < 0.7:
     #     print(f"匹配度过低，得分：{score}")
     #     return
