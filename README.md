@@ -16,6 +16,8 @@ This code is based on:
 
 [gradio](https://github.com/gradio-app/gradio)
 
+[langchain-mcp-adapters](https://github.com/langchain-ai/langchain-mcp-adapters)
+
 ## Environment
 
 
