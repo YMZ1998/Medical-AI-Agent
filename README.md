@@ -10,6 +10,8 @@ This code is based on:
 
 [langchain-rag-tutorial](https://github.com/pixegami/langchain-rag-tutorial)
 
+[Chat_with_Datawhale_langchain](https://github.com/logan-zou/Chat_with_Datawhale_langchain)
+
 ## Tools
 
 [langchain](https://github.com/langchain-ai/langchain)
@@ -20,6 +22,7 @@ This code is based on:
 
 [gradio](https://github.com/gradio-app/gradio)
 
+[bailian aliyun](https://bailian.console.aliyun.com/)
 
 ## Environment
 
