@@ -14,7 +14,7 @@ from Chat_with_Datawhale_langchain.embedding.call_embedding import get_embedding
 dashscope_api_key = get_dashscope_api_key()
 
 DEFAULT_DB_PATH = "../knowledge_db"
-DEFAULT_PERSIST_PATH = "../vector_db"
+DEFAULT_PERSIST_PATH = "./vector_db"
 
 
 def get_files(dir_path):

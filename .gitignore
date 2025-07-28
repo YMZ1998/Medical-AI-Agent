@@ -8,6 +8,7 @@ __pycache__/
 *.env
 Results/
 
+vector_db/
 data/
 .idea/
 
