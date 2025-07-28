@@ -1,12 +1,8 @@
-# 导入必要的库
-
+import os
 import sys
-import os                # 用于操作系统相关的操作，例如读取环境变量
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-import IPython.display   # 用于在 IPython 环境中显示数据，例如图片
-import io                # 用于处理流式数据（例如文件流）
 import gradio as gr
 from dotenv import load_dotenv, find_dotenv
 from llm.call_llm import get_completion
