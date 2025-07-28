@@ -1,4 +1,0 @@
-langchain
-langchain-community
-python-dotenv
-dashscope>=1.12.0
