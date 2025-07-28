@@ -15,18 +15,27 @@ from qa_chain.QA_chain_self import QA_chain_self
 # 寻找 .env 文件并加载它的内容
 # 这允许您使用 os.environ 来读取在 .env 文件中设置的环境变量
 _ = load_dotenv(find_dotenv())
+# LLM_MODEL_DICT = {
+#     "openai": ["gpt-3.5-turbo", "gpt-3.5-turbo-16k-0613", "gpt-3.5-turbo-0613", "gpt-4", "gpt-4-32k"],
+#     "wenxin": ["ERNIE-Bot", "ERNIE-Bot-4", "ERNIE-Bot-turbo"],
+#     "xinhuo": ["Spark-1.5", "Spark-2.0"],
+#     "zhipuai": ["chatglm_pro", "chatglm_std", "chatglm_lite"]
+# }
 LLM_MODEL_DICT = {
-    "openai": ["gpt-3.5-turbo", "gpt-3.5-turbo-16k-0613", "gpt-3.5-turbo-0613", "gpt-4", "gpt-4-32k"],
-    "wenxin": ["ERNIE-Bot", "ERNIE-Bot-4", "ERNIE-Bot-turbo"],
-    "xinhuo": ["Spark-1.5", "Spark-2.0"],
-    "zhipuai": ["chatglm_pro", "chatglm_std", "chatglm_lite"]
+    "": [
+        "qwen-turbo",
+        "qwen-plus",
+        "qwen-turbo-latest",
+        "qwen-plus-latest",
+    ]
 }
 
 
+
 LLM_MODEL_LIST = sum(list(LLM_MODEL_DICT.values()),[])
-INIT_LLM = "chatglm_std"
-EMBEDDING_MODEL_LIST = ['zhipuai', 'openai', 'm3e']
-INIT_EMBEDDING_MODEL = "m3e"
+INIT_LLM = "qwen-turbo"
+EMBEDDING_MODEL_LIST = ['tongyi', 'openai']
+INIT_EMBEDDING_MODEL = "tongyi"
 DEFAULT_DB_PATH = "./knowledge_db"
 DEFAULT_PERSIST_PATH = "./vector_db/chroma"
 AIGC_AVATAR_PATH = "./figures/aigc_avatar.png"
