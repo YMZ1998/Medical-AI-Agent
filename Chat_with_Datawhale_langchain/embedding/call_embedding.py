@@ -7,7 +7,7 @@ from Chat_with_Datawhale_langchain.llm.call_llm import parse_llm_api_key
 from langchain_rag_tutorial.embeddings import TongyiEmbeddings
 
 
-def get_embedding(embedding: str, embedding_key: str=None, env_file: str=None):
+def get_embedding(embedding: str, embedding_key: str=None):
     if embedding == 'm3e':
         return HuggingFaceEmbeddings(model_name="moka-ai/m3e-base")
     if embedding_key == None:

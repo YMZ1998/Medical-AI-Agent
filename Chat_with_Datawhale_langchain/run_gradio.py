@@ -1,29 +1,18 @@
 import re
 
 import gradio as gr
-from dotenv import load_dotenv, find_dotenv
 
+from API import get_dashscope_api_key
 from database.create_db import create_db_info
 from llm.call_llm import get_completion
 from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
 from qa_chain.QA_chain_self import QA_chain_self
 
-from API import get_dashscope_api_key
-
 dashscope_api_key = get_dashscope_api_key()
-# LLM_MODEL_DICT = {
-#     "openai": ["gpt-3.5-turbo", "gpt-3.5-turbo-16k-0613", "gpt-3.5-turbo-0613", "gpt-4", "gpt-4-32k"],
-#     "wenxin": ["ERNIE-Bot", "ERNIE-Bot-4", "ERNIE-Bot-turbo"],
-#     "xinhuo": ["Spark-1.5", "Spark-2.0"],
-#     "zhipuai": ["chatglm_pro", "chatglm_std", "chatglm_lite"]
-# }
+
 LLM_MODEL_DICT = {
-    "": [
-        "qwen-turbo",
-        "qwen-plus",
-        "qwen-turbo-latest",
-        "qwen-plus-latest",
-    ]
+    "openai": ["gpt-3.5-turbo", "gpt-3.5-turbo-16k-0613", "gpt-3.5-turbo-0613", "gpt-4", "gpt-4-32k"],
+    "tongyi": ["qwen-turbo", "qwen-plus", "qwen-turbo-latest", "qwen-plus-latest"]
 }
 
 LLM_MODEL_LIST = sum(list(LLM_MODEL_DICT.values()), [])

@@ -21,16 +21,13 @@ from dashscope import Generation
 from dotenv import load_dotenv, find_dotenv
 
 
-def get_completion(prompt: str, model: str, temperature=0.1, api_key=None, secret_key=None, access_token=None,
-                   appid=None, api_secret=None, max_tokens=2048):
+def get_completion(prompt: str, model: str, temperature=0.1, api_key=None, max_tokens=2048):
     # 调用大模型获取回复，支持上述三种模型+gpt
     # arguments:
     # prompt: 输入提示
     # model：模型名
     # temperature: 温度系数
     # api_key：如名
-    # secret_key, access_token：调用文心系列模型需要
-    # appid, api_secret: 调用星火系列模型需要
     # max_tokens : 返回最长序列
     # return: 模型返回，字符串
     # 调用 GPT
