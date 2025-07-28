@@ -53,6 +53,7 @@ def main():
         return
 
     score = results[0][1]
+    print(results)
     print("score: ", score)
     # if score is None or score < 0.7:
     #     print(f"匹配度过低，得分：{score}")

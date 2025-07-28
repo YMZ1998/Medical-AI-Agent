@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 
 EMBEDDING_MODELS = {
     "text_embedding_v1": dashscope.TextEmbedding.Models.text_embedding_v1,
-    "text_embedding_v2": dashscope.TextEmbedding.Models.text_embedding_v2
+    "text_embedding_v2": dashscope.TextEmbedding.Models.text_embedding_v2,
+    "text_embedding_v3": dashscope.TextEmbedding.Models.text_embedding_v3,
+    "text_embedding_v4": dashscope.TextEmbedding.Models.text_embedding_v4,
 }
 # 最多支持25条，每条最长支持2048tokens
 DASHSCOPE_MAX_BATCH_SIZE = 25
@@ -29,7 +31,7 @@ def batched(inputs: List,
 class TongyiEmbeddings(BaseModel, Embeddings):
     """Tongyi embedding models."""
 
-    model_name: str = "text_embedding_v1"
+    model_name: str = "text_embedding_v4"
     dashscope_api_key: Optional[SecretStr] = None
     retry_count: int = 3
     @property
