@@ -28,7 +28,8 @@ def main():
     parser.add_argument("query_text", nargs="?", help="The query text.")
     args = parser.parse_args()
     # args.query_text = "What does the cat do in the morning?"
-    args.query_text = "这只猫每天早上干什么？"
+    # args.query_text = "这只猫每天早上干什么？"
+    args.query_text = "这只猫名字叫什么？"
     if args.query_text is None:
         query_text = input("请输入你要查询的问题：")
     else:

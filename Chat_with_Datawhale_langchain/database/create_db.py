@@ -45,8 +45,11 @@ def file_loader(file, loaders):
 
 
 def create_db_info(files=DEFAULT_DB_PATH, embeddings="openai", persist_directory=DEFAULT_PERSIST_PATH):
-    if embeddings == 'openai' or embeddings == 'm3e' or embeddings =='zhipuai':
+    print("create db info")
+    if embeddings == 'openai' or embeddings == 'm3e' or embeddings =='tongyi':
         vectordb = create_db(files, persist_directory, embeddings)
+    else:
+        print("embedding model not support")
     return ""
 
 

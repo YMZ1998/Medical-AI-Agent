@@ -15,11 +15,7 @@ class QA_chain_self():
     - top_k：返回检索的前k个相似文档
     - file_path：建库文件所在路径
     - persist_path：向量数据库持久化路径
-    - appid：星火需要输入
     - api_key：所有模型都需要
-    - Spark_api_secret：星火秘钥
-    - Wenxin_secret_key：文心秘钥
-    - embeddings：使用的embedding模型  
     - embedding_key：使用的embedding模型的秘钥（智谱或者OpenAI）
     - template：可以自定义提示模板，没有输入则使用默认的提示模板default_template_rq    
     """
@@ -32,23 +28,18 @@ class QA_chain_self():
     有用的回答:"""
 
     def __init__(self, model: str, temperature: float = 0.0, top_k: int = 4, file_path: str = None,
-                 persist_path: str = None, appid: str = None, api_key: str = None, Spark_api_secret: str = None,
-                 Wenxin_secret_key: str = None, embedding="openai", embedding_key=None, template=default_template_rq):
+                 persist_path: str = None, api_key: str = None, embedding="openai", embedding_key=None, template=default_template_rq):
         self.model = model
         self.temperature = temperature
         self.top_k = top_k
         self.file_path = file_path
         self.persist_path = persist_path
-        self.appid = appid
         self.api_key = api_key
-        self.Spark_api_secret = Spark_api_secret
-        self.Wenxin_secret_key = Wenxin_secret_key
         self.embedding = embedding
         self.embedding_key = embedding_key
         self.template = template
         self.vectordb = get_vectordb(self.file_path, self.persist_path, self.embedding, self.embedding_key)
-        self.llm = model_to_llm(self.model, self.temperature, self.appid, self.api_key, self.Spark_api_secret,
-                                self.Wenxin_secret_key)
+        self.llm = model_to_llm(self.model, self.temperature, self.api_key)
 
         self.QA_CHAIN_PROMPT = PromptTemplate(input_variables=["context", "question"],
                                               template=self.template)

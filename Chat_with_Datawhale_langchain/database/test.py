@@ -7,7 +7,7 @@ dashscope_api_key = get_dashscope_api_key()
 
 embedding = get_embedding("tongyi")
 
-persist_directory = './vector_db'
+persist_directory = '../vector_db'
 vectordb = Chroma(
     persist_directory=persist_directory,
     embedding_function=embedding

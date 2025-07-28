@@ -2,6 +2,7 @@ import re
 
 from langchain.chains import ConversationalRetrievalChain
 
+from API import get_dashscope_api_key
 from Chat_with_Datawhale_langchain.qa_chain.get_vectordb import get_vectordb
 from Chat_with_Datawhale_langchain.qa_chain.model_to_llm import model_to_llm
 
@@ -16,17 +17,14 @@ class Chat_QA_chain_self:
     - history_len：控制保留的最近 history_len 次对话
     - file_path：建库文件所在路径
     - persist_path：向量数据库持久化路径
-    - appid：星火
     - api_key：星火、百度文心、OpenAI、智谱都需要传递的参数
-    - Spark_api_secret：星火秘钥
-    - Wenxin_secret_key：文心秘钥
     - embeddings：使用的embedding模型
     - embedding_key：使用的embedding模型的秘钥（智谱或者OpenAI）  
     """
 
     def __init__(self, model: str, temperature: float = 0.0, top_k: int = 4, chat_history: list = [],
-                 file_path: str = None, persist_path: str = None, appid: str = None, api_key: str = None,
-                 Spark_api_secret: str = None, Wenxin_secret_key: str = None, embedding="openai",
+                 file_path: str = None, persist_path: str = None, api_key: str = None,
+                 embedding="openai",
                  embedding_key: str = None):
         self.model = model
         self.temperature = temperature
@@ -35,10 +33,7 @@ class Chat_QA_chain_self:
         # self.history_len = history_len
         self.file_path = file_path
         self.persist_path = persist_path
-        self.appid = appid
         self.api_key = api_key
-        self.Spark_api_secret = Spark_api_secret
-        self.Wenxin_secret_key = Wenxin_secret_key
         self.embedding = embedding
         self.embedding_key = embedding_key
 
@@ -74,8 +69,7 @@ class Chat_QA_chain_self:
 
         if temperature == None:
             temperature = self.temperature
-        llm = model_to_llm(self.model, temperature, self.appid, self.api_key, self.Spark_api_secret,
-                           self.Wenxin_secret_key)
+        llm = model_to_llm(self.model, temperature, self.api_key)
 
         # self.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
@@ -94,3 +88,20 @@ class Chat_QA_chain_self:
         self.chat_history.append((question, answer))  # 更新历史记录
 
         return self.chat_history  # 返回本次回答和更新后的历史记录
+
+
+if __name__ == '__main__':
+    dashscope_api_key = get_dashscope_api_key()
+    chatbot = Chat_QA_chain_self(
+        model="qwen-turbo",
+        file_path="../../langchain_rag_tutorial/data/test.md",
+        persist_path="./vector_db/",
+        api_key=dashscope_api_key,
+        embedding="tongyi",
+        embedding_key=dashscope_api_key
+    )
+
+    questions = ["这只猫名字叫什么？", "这只猫每天早上干什么？"]
+    for question in questions:
+        answer = chatbot.answer(question)
+        print("答复:", answer)
