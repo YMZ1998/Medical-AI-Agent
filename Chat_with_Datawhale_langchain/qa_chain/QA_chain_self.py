@@ -3,8 +3,8 @@ import re
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
-from ..qa_chain.get_vectordb import get_vectordb
-from ..qa_chain.model_to_llm import model_to_llm
+from Chat_with_Datawhale_langchain.qa_chain.get_vectordb import get_vectordb
+from Chat_with_Datawhale_langchain.qa_chain.model_to_llm import model_to_llm
 
 
 class QA_chain_self():

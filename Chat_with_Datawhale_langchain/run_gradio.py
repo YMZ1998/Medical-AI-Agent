@@ -1,15 +1,13 @@
-import os
-import sys
-
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+import re
 
 import gradio as gr
 from dotenv import load_dotenv, find_dotenv
-from llm.call_llm import get_completion
+
 from database.create_db import create_db_info
+from llm.call_llm import get_completion
 from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
 from qa_chain.QA_chain_self import QA_chain_self
-import re
+
 # 导入 dotenv 库的函数
 # dotenv 允许您从 .env 文件中读取环境变量
 # 这在开发时特别有用，可以避免将敏感信息（如API密钥）硬编码到代码中

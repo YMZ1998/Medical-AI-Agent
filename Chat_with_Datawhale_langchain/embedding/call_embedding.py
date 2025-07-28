@@ -2,10 +2,10 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from embedding.zhipuai_embedding import ZhipuAIEmbeddings
+from Chat_with_Datawhale_langchain.embedding.zhipuai_embedding import ZhipuAIEmbeddings
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.embeddings.openai import OpenAIEmbeddings
-from llm.call_llm import parse_llm_api_key
+from Chat_with_Datawhale_langchain.llm.call_llm import parse_llm_api_key
 
 def get_embedding(embedding: str, embedding_key: str=None, env_file: str=None):
     if embedding == 'm3e':

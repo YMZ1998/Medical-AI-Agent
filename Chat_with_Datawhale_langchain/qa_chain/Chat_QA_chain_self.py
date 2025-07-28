@@ -2,8 +2,8 @@ import re
 
 from langchain.chains import ConversationalRetrievalChain
 
-from get_vectordb import get_vectordb
-from model_to_llm import model_to_llm
+from Chat_with_Datawhale_langchain.qa_chain.get_vectordb import get_vectordb
+from Chat_with_Datawhale_langchain.qa_chain.model_to_llm import model_to_llm
 
 
 class Chat_QA_chain_self:

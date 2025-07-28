@@ -1,16 +1,12 @@
-import sys
-
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-# 导入功能模块目录
-sys.path.append("../")
 from qa_chain.QA_chain_self import QA_chain_self
 
 # os.environ["HTTP_PROXY"] = "http://127.0.0.1:7890"
 # os.environ["HTTPS_PROXY"] = "http://127.0.0.1:7890"
 
-app = FastAPI()  # 创建 api 对象
+app = FastAPI()
 
 template = """使用以下上下文来回答最后的问题。如果你不知道答案，就说你不知道，不要试图编造答
 案。最多使用三句话。尽量使答案简明扼要。总是在回答的最后说“谢谢你的提问！”。

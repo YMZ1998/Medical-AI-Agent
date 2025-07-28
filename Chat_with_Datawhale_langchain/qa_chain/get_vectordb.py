@@ -1,7 +1,7 @@
 import os
 
-from ..database.create_db import create_db, load_knowledge_db
-from ..embedding.call_embedding import get_embedding
+from Chat_with_Datawhale_langchain.database.create_db import create_db, load_knowledge_db
+from Chat_with_Datawhale_langchain.embedding.call_embedding import get_embedding
 
 
 def get_vectordb(file_path: str = None, persist_path: str = None, embedding="openai", embedding_key: str = None):

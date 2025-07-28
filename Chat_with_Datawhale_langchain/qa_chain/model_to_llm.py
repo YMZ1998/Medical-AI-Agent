@@ -1,9 +1,6 @@
 from langchain.chat_models import ChatOpenAI
 
-from ..llm.call_llm import parse_llm_api_key
-from ..llm.spark_llm import Spark_LLM
-from ..llm.wenxin_llm import Wenxin_LLM
-from ..llm.zhipuai_llm import ZhipuAILLM
+from Chat_with_Datawhale_langchain.llm.call_llm import parse_llm_api_key
 
 
 def model_to_llm(model: str = None, temperature: float = 0.0, appid: str = None, api_key: str = None,
