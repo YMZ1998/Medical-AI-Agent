@@ -1,13 +1,21 @@
-import json
 import requests
 import os
 import base64
 import loguru
 from dotenv import load_dotenv
+import base64
+import os
+
+import loguru
+import requests
+from dotenv import load_dotenv
+
 # 加载环境变量
 load_dotenv()
 # 从环境变量中获取TOKEN
 TOKEN = os.getenv('TOKEN')
+
+
 # 定义获取组织仓库的函数
 def get_repos(org_name, token, export_dir):
     headers = {
@@ -28,6 +36,8 @@ def get_repos(org_name, token, export_dir):
         loguru.logger.error(f"Error fetching repositories: {response.status_code}")
         loguru.logger.error(response.text)
         return []
+
+
 # 定义拉取仓库README文件的函数
 def fetch_repo_readme(org_name, repo_name, token, export_dir):
     headers = {
@@ -49,6 +59,8 @@ def fetch_repo_readme(org_name, repo_name, token, export_dir):
     else:
         loguru.logger.error(f"Error fetching README for {repo_name}: {response.status_code}")
         loguru.logger.error(response.text)
+
+
 # 主函数
 if __name__ == '__main__':
     # 配置组织名称

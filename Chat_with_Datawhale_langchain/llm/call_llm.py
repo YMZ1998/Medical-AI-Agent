@@ -5,8 +5,6 @@ import hashlib
 import hmac
 import json
 import os
-import queue
-import ssl
 from datetime import datetime
 from http import HTTPStatus
 from time import mktime
@@ -15,8 +13,6 @@ from urllib.parse import urlparse
 from wsgiref.handlers import format_date_time
 
 import openai
-import requests
-import websocket
 from dashscope import Generation
 from dotenv import load_dotenv, find_dotenv
 
@@ -94,50 +90,6 @@ def get_completion_tongyi(prompt: str,
         raise RuntimeError(f"DashScope 错误 {response.status_code}: {response.message}")
 
     return response.output.choices[0].message.content
-
-
-def get_access_token(api_key, secret_key):
-    """
-    使用 API Key，Secret Key 获取access_token，替换下列示例中的应用API Key、应用Secret Key
-    """
-    # 指定网址
-    url = f"https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id={api_key}&client_secret={secret_key}"
-    # 设置 POST 访问
-    payload = json.dumps("")
-    headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-    # 通过 POST 访问获取账户对应的 access_token
-    response = requests.request("POST", url, headers=headers, data=payload)
-    return response.json().get("access_token")
-
-
-def get_completion_wenxin(prompt: str, model: str, temperature: float, api_key: str, secret_key: str):
-    # 封装百度文心原生接口
-    if api_key == None or secret_key == None:
-        api_key, secret_key = parse_llm_api_key("wenxin")
-    # 获取access_token
-    access_token = get_access_token(api_key, secret_key)
-    # 调用接口
-    url = f"https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/eb-instant?access_token={access_token}"
-    # 配置 POST 参数
-    payload = json.dumps({
-        "messages": [
-            {
-                "role": "user",  # user prompt
-                "content": "{}".format(prompt)  # 输入的 prompt
-            }
-        ]
-    })
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    # 发起请求
-    response = requests.request("POST", url, headers=headers, data=payload)
-    # 返回的是一个 Json 字符串
-    js = json.loads(response.text)
-    return js["result"]
 
 
 class Ws_Param(object):
@@ -252,39 +204,6 @@ def gen_params(appid, domain, question, temperature, max_tokens):
         }
     }
     return data
-
-
-def spark_main(appid, api_key, api_secret, Spark_url, domain, question, temperature, max_tokens):
-    # print("星火:")
-    output_queue = queue.Queue()
-
-    def on_message(ws, message):
-        data = json.loads(message)
-        code = data['header']['code']
-        if code != 0:
-            print(f'请求错误: {code}, {data}')
-            ws.close()
-        else:
-            choices = data["payload"]["choices"]
-            status = choices["status"]
-            content = choices["text"][0]["content"]
-            # print(content, end='')
-            # 将输出值放入队列
-            output_queue.put(content)
-            if status == 2:
-                ws.close()
-
-    wsParam = Ws_Param(appid, api_key, api_secret, Spark_url)
-    websocket.enableTrace(False)
-    wsUrl = wsParam.create_url()
-    ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close, on_open=on_open)
-    ws.appid = appid
-    ws.question = question
-    ws.domain = domain
-    ws.temperature = temperature
-    ws.max_tokens = max_tokens
-    ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
-    return ''.join([output_queue.get() for _ in range(output_queue.qsize())])
 
 
 def parse_llm_api_key(model: str, env_file: dict() = None):

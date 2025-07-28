@@ -2,16 +2,18 @@ import re
 
 import gradio as gr
 
-from API import get_dashscope_api_key
+
 from database.create_db import create_db_info
 from llm.call_llm import get_completion
 from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
 from qa_chain.QA_chain_self import QA_chain_self
 
+from API import get_dashscope_api_key
+
 dashscope_api_key = get_dashscope_api_key()
 
 LLM_MODEL_DICT = {
-    "openai": ["gpt-3.5-turbo", "gpt-3.5-turbo-16k-0613", "gpt-3.5-turbo-0613", "gpt-4", "gpt-4-32k"],
+    "openai": ["gpt-3.5-turbo",  "gpt-4", "gpt-4-32k"],
     "tongyi": ["qwen-turbo", "qwen-plus", "qwen-turbo-latest", "qwen-plus-latest"]
 }
 
