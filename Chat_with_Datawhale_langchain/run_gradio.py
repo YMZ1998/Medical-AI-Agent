@@ -8,13 +8,9 @@ from llm.call_llm import get_completion
 from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
 from qa_chain.QA_chain_self import QA_chain_self
 
-# 导入 dotenv 库的函数
-# dotenv 允许您从 .env 文件中读取环境变量
-# 这在开发时特别有用，可以避免将敏感信息（如API密钥）硬编码到代码中
+from API import get_dashscope_api_key
 
-# 寻找 .env 文件并加载它的内容
-# 这允许您使用 os.environ 来读取在 .env 文件中设置的环境变量
-_ = load_dotenv(find_dotenv())
+dashscope_api_key = get_dashscope_api_key()
 # LLM_MODEL_DICT = {
 #     "openai": ["gpt-3.5-turbo", "gpt-3.5-turbo-16k-0613", "gpt-3.5-turbo-0613", "gpt-4", "gpt-4-32k"],
 #     "wenxin": ["ERNIE-Bot", "ERNIE-Bot-4", "ERNIE-Bot-turbo"],
@@ -30,9 +26,7 @@ LLM_MODEL_DICT = {
     ]
 }
 
-
-
-LLM_MODEL_LIST = sum(list(LLM_MODEL_DICT.values()),[])
+LLM_MODEL_LIST = sum(list(LLM_MODEL_DICT.values()), [])
 INIT_LLM = "qwen-turbo"
 EMBEDDING_MODEL_LIST = ['tongyi', 'openai']
 INIT_EMBEDDING_MODEL = "tongyi"
@@ -43,8 +37,11 @@ DATAWHALE_AVATAR_PATH = "./figures/datawhale_avatar.png"
 AIGC_LOGO_PATH = "./figures/aigc_logo.png"
 DATAWHALE_LOGO_PATH = "./figures/datawhale_logo.png"
 
+
 def get_model_by_platform(platform):
     return LLM_MODEL_DICT.get(platform, "")
+
+
 class Model_center():
     """
     存储问答 Chain 的对象 
@@ -52,11 +49,15 @@ class Model_center():
     - chat_qa_chain_self: 以 (model, embedding) 为键存储的带历史记录的问答链。
     - qa_chain_self: 以 (model, embedding) 为键存储的不带历史记录的问答链。
     """
+
     def __init__(self):
         self.chat_qa_chain_self = {}
         self.qa_chain_self = {}
 
-    def chat_qa_chain_self_answer(self, question: str, chat_history: list = [], model: str = "openai", embedding: str = "openai", temperature: float = 0.0, top_k: int = 4, history_len: int = 3, file_path: str = DEFAULT_DB_PATH, persist_path: str = DEFAULT_PERSIST_PATH):
+    def chat_qa_chain_self_answer(self, question: str, chat_history: list = [], model: str = "openai",
+                                  embedding: str = "openai", temperature: float = 0.0, top_k: int = 4,
+                                  history_len: int = 3, file_path: str = DEFAULT_DB_PATH,
+                                  persist_path: str = DEFAULT_PERSIST_PATH):
         """
         调用带历史记录的问答链进行回答
         """
@@ -65,13 +66,18 @@ class Model_center():
         try:
             if (model, embedding) not in self.chat_qa_chain_self:
                 self.chat_qa_chain_self[(model, embedding)] = Chat_QA_chain_self(model=model, temperature=temperature,
-                                                                                    top_k=top_k, chat_history=chat_history, file_path=file_path, persist_path=persist_path, embedding=embedding)
+                                                                                 top_k=top_k, chat_history=chat_history,
+                                                                                 file_path=file_path,
+                                                                                 persist_path=persist_path,
+                                                                                 embedding=embedding)
             chain = self.chat_qa_chain_self[(model, embedding)]
             return "", chain.answer(question=question, temperature=temperature, top_k=top_k)
         except Exception as e:
             return e, chat_history
 
-    def qa_chain_self_answer(self, question: str, chat_history: list = [], model: str = "openai", embedding="openai", temperature: float = 0.0, top_k: int = 4, file_path: str = DEFAULT_DB_PATH, persist_path: str = DEFAULT_PERSIST_PATH):
+    def qa_chain_self_answer(self, question: str, chat_history: list = [], model: str = "openai", embedding="openai",
+                             temperature: float = 0.0, top_k: int = 4, file_path: str = DEFAULT_DB_PATH,
+                             persist_path: str = DEFAULT_PERSIST_PATH):
         """
         调用不带历史记录的问答链进行回答
         """
@@ -80,7 +86,8 @@ class Model_center():
         try:
             if (model, embedding) not in self.qa_chain_self:
                 self.qa_chain_self[(model, embedding)] = QA_chain_self(model=model, temperature=temperature,
-                                                                       top_k=top_k, file_path=file_path, persist_path=persist_path, embedding=embedding)
+                                                                       top_k=top_k, file_path=file_path,
+                                                                       persist_path=persist_path, embedding=embedding)
             chain = self.qa_chain_self[(model, embedding)]
             chat_history.append(
                 (question, chain.answer(question, temperature, top_k)))
@@ -119,7 +126,6 @@ def format_chat_prompt(message, chat_history):
     return prompt
 
 
-
 def respond(message, chat_history, llm, history_len=3, temperature=0.1, max_tokens=2048):
     """
     该函数用于生成机器人的回复。
@@ -133,7 +139,7 @@ def respond(message, chat_history, llm, history_len=3, temperature=0.1, max_toke
     chat_history: 更新后的聊天历史记录
     """
     if message == None or len(message) < 1:
-            return "", chat_history
+        return "", chat_history
     try:
         # 限制 history 的记忆长度
         chat_history = chat_history[-history_len:] if history_len > 0 else []
@@ -156,18 +162,21 @@ model_center = Model_center()
 
 block = gr.Blocks()
 with block as demo:
-    with gr.Row(equal_height=True):           
-        gr.Image(value=AIGC_LOGO_PATH, scale=1, min_width=10, show_label=False, show_download_button=False, container=False)
-   
+    with gr.Row(equal_height=True):
+        gr.Image(value=AIGC_LOGO_PATH, scale=1, min_width=10, show_label=False, show_download_button=False,
+                 container=False)
+
         with gr.Column(scale=2):
             gr.Markdown("""<h1><center>动手学大模型应用开发</center></h1>
                 <center>LLM-UNIVERSE</center>
                 """)
-        gr.Image(value=DATAWHALE_LOGO_PATH, scale=1, min_width=10, show_label=False, show_download_button=False, container=False)
+        gr.Image(value=DATAWHALE_LOGO_PATH, scale=1, min_width=10, show_label=False, show_download_button=False,
+                 container=False)
 
     with gr.Row():
         with gr.Column(scale=4):
-            chatbot = gr.Chatbot(height=400, show_copy_button=True, show_share_button=True, avatar_images=(AIGC_AVATAR_PATH, DATAWHALE_AVATAR_PATH))
+            chatbot = gr.Chatbot(height=400, show_copy_button=True, show_share_button=True,
+                                 avatar_images=(AIGC_AVATAR_PATH, DATAWHALE_AVATAR_PATH))
             # 创建一个文本框组件，用于输入 prompt。
             msg = gr.Textbox(label="Prompt/问题")
 
@@ -227,18 +236,18 @@ with block as demo:
 
         # 设置按钮的点击事件。当点击时，调用上面定义的 chat_qa_chain_self_answer 函数，并传入用户的消息和聊天历史记录，然后更新文本框和聊天机器人组件。
         db_with_his_btn.click(model_center.chat_qa_chain_self_answer, inputs=[
-                              msg, chatbot,  llm, embeddings, temperature, top_k, history_len],
+            msg, chatbot, llm, embeddings, temperature, top_k, history_len],
                               outputs=[msg, chatbot])
         # 设置按钮的点击事件。当点击时，调用上面定义的 qa_chain_self_answer 函数，并传入用户的消息和聊天历史记录，然后更新文本框和聊天机器人组件。
         db_wo_his_btn.click(model_center.qa_chain_self_answer, inputs=[
-                            msg, chatbot, llm, embeddings, temperature, top_k], outputs=[msg, chatbot])
+            msg, chatbot, llm, embeddings, temperature, top_k], outputs=[msg, chatbot])
         # 设置按钮的点击事件。当点击时，调用上面定义的 respond 函数，并传入用户的消息和聊天历史记录，然后更新文本框和聊天机器人组件。
         llm_btn.click(respond, inputs=[
-                      msg, chatbot, llm, history_len, temperature], outputs=[msg, chatbot], show_progress="minimal")
+            msg, chatbot, llm, history_len, temperature], outputs=[msg, chatbot], show_progress="minimal")
 
         # 设置文本框的提交事件（即按下Enter键时）。功能与上面的 llm_btn 按钮点击事件相同。
         msg.submit(respond, inputs=[
-                   msg, chatbot,  llm, history_len, temperature], outputs=[msg, chatbot], show_progress="hidden")
+            msg, chatbot, llm, history_len, temperature], outputs=[msg, chatbot], show_progress="hidden")
         # 点击后清空后端存储的聊天记录
         clear.click(model_center.clear_history)
     gr.Markdown("""提醒：<br>

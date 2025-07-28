@@ -8,6 +8,7 @@ import os
 import queue
 import ssl
 from datetime import datetime
+from http import HTTPStatus
 from time import mktime
 from urllib.parse import urlencode
 from urllib.parse import urlparse
@@ -16,6 +17,7 @@ from wsgiref.handlers import format_date_time
 import openai
 import requests
 import websocket
+from dashscope import Generation
 from dotenv import load_dotenv, find_dotenv
 
 
@@ -34,12 +36,10 @@ def get_completion(prompt: str, model: str, temperature=0.1, api_key=None, secre
     # 调用 GPT
     if model in ["gpt-3.5-turbo", "gpt-3.5-turbo-16k-0613", "gpt-3.5-turbo-0613", "gpt-4", "gpt-4-32k"]:
         return get_completion_gpt(prompt, model, temperature, api_key, max_tokens)
-    elif model in ["ERNIE-Bot", "ERNIE-Bot-4", "ERNIE-Bot-turbo"]:
-        return get_completion_wenxin(prompt, model, temperature, api_key, secret_key)
-    elif model in ["Spark-1.5", "Spark-2.0"]:
-        return get_completion_spark(prompt, model, temperature, api_key, appid, api_secret, max_tokens)
+    elif model in ["qwen-turbo", "qwen-plus", "qwen-turbo-latest", "qwen-plus-latest"]:
+        return get_completion_tongyi(prompt, model, temperature, api_key, max_tokens)
     else:
-        return "不正确的模型"
+        return f"不正确的模型: {model}"
 
 
 def get_completion_gpt(prompt: str, model: str, temperature: float, api_key: str, max_tokens: int):
@@ -57,6 +57,46 @@ def get_completion_gpt(prompt: str, model: str, temperature: float, api_key: str
     )
     # 调用 OpenAI 的 ChatCompletion 接口
     return response.choices[0].message["content"]
+
+
+def get_completion_tongyi(prompt: str,
+                          model: str = "qwen-turbo",
+                          temperature: float = 0.7,
+                          api_key: str = None,
+                          max_tokens: int = 1024) -> str:
+    """
+    使用 DashScope 通义千问模型生成回复。
+
+    参数:
+        prompt (str): 输入提示词
+        model (str): 通义模型名，例如 "qwen-turbo"
+        temperature (float): 随机性
+        api_key (str): DashScope API 密钥
+        max_tokens (int): 最大输出 token 数量
+
+    返回:
+        str: 模型回复文本
+    """
+    if api_key is None:
+        api_key = parse_llm_api_key("tongyi")
+
+    Generation.api_key = api_key
+
+    try:
+        response = Generation.call(
+            model=model,
+            prompt=prompt,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            result_format="message"  # 返回格式：message 或 text
+        )
+    except Exception as e:
+        raise RuntimeError(f"DashScope 调用失败: {e}")
+
+    if response.status_code != HTTPStatus.OK:
+        raise RuntimeError(f"DashScope 错误 {response.status_code}: {response.message}")
+
+    return response.output.choices[0].message.content
 
 
 def get_access_token(api_key, secret_key):
@@ -101,28 +141,6 @@ def get_completion_wenxin(prompt: str, model: str, temperature: float, api_key: 
     # 返回的是一个 Json 字符串
     js = json.loads(response.text)
     return js["result"]
-
-
-def get_completion_spark(prompt: str, model: str, temperature: float, api_key: str, appid: str, api_secret: str,
-                         max_tokens: int):
-    if api_key == None or appid == None and api_secret == None:
-        api_key, appid, api_secret = parse_llm_api_key("spark")
-
-    # 配置 1.5 和 2 的不同环境
-    if model == "Spark-1.5":
-        domain = "general"
-        Spark_url = "ws://spark-api.xf-yun.com/v1.1/chat"  # v1.5环境的地址
-    else:
-        domain = "generalv2"  # v2.0版本
-        Spark_url = "ws://spark-api.xf-yun.com/v2.1/chat"  # v2.0环境的地址
-
-    question = [{"role": "user", "content": prompt}]
-    response = spark_main(appid, api_key, api_secret, Spark_url, domain, question, temperature, max_tokens)
-    return response
-
-
-# 星火 API 调用使用
-answer = ""
 
 
 class Ws_Param(object):
@@ -281,9 +299,7 @@ def parse_llm_api_key(model: str, env_file: dict() = None):
         env_file = os.environ
     if model == "openai":
         return env_file["OPENAI_API_KEY"]
-    elif model == "wenxin":
-        return env_file["wenxin_api_key"], env_file["wenxin_secret_key"]
-    elif model == "spark":
-        return env_file["spark_api_key"], env_file["spark_appid"], env_file["spark_api_secret"]
+    elif model == "tongyi":
+        return env_file["DASHSCOPE_API_KEY"]
     else:
         raise ValueError(f"model{model} not support!!!")
