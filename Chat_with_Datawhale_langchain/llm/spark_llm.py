@@ -1,36 +1,24 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-'''
-@File    :   wenxin_llm.py
-@Time    :   2023/10/16 18:53:26
-@Author  :   Logan Zou 
-@Version :   1.0
-@Contact :   loganzou0421@163.com
-@License :   (C)Copyright 2017-2018, Liugroup-NLPR-CASIA
-@Desc    :   基于讯飞星火大模型自定义 LLM 类
-'''
-
-from langchain.llms.base import LLM
-from typing import Any, List, Mapping, Optional, Dict, Union, Tuple
-from pydantic import Field
-from llm.self_llm import Self_LLM
-import json
-import requests
-from langchain.callbacks.manager import CallbackManagerForLLMRun
+from typing import Any, List, Optional
 import _thread as thread
 import base64
 import datetime
 import hashlib
 import hmac
 import json
-from urllib.parse import urlparse
+import queue
 import ssl
 from datetime import datetime
 from time import mktime
+from typing import Any, List, Optional
 from urllib.parse import urlencode
+from urllib.parse import urlparse
 from wsgiref.handlers import format_date_time
+
 import websocket  # 使用websocket_client
-import queue
+from langchain.callbacks.manager import CallbackManagerForLLMRun
+
+from self_llm import Self_LLM
+
 
 class Spark_LLM(Self_LLM):
     # 讯飞星火大模型的自定义 LLM

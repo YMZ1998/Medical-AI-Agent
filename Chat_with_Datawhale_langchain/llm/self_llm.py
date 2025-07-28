@@ -1,18 +1,8 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-'''
-@File    :   self_llm.py
-@Time    :   2023/10/16 18:48:08
-@Author  :   Logan Zou 
-@Version :   1.0
-@Contact :   loganzou0421@163.com
-@License :   (C)Copyright 2017-2018, Liugroup-NLPR-CASIA
-@Desc    :   在 LangChain LLM 基础上封装的项目类，统一了 GPT、文心、讯飞、智谱多种 API 调用
-'''
+from typing import Dict, Any, Mapping
 
 from langchain.llms.base import LLM
-from typing import Dict, Any, Mapping
 from pydantic import Field
+
 
 class Self_LLM(LLM):
     # 自定义 LLM

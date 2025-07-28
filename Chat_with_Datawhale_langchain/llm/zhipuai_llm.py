@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-'''
-@File    :   zhipuai_llm.py
-@Time    :   2023/10/16 22:06:26
-@Author  :   0-yy-0
-@Version :   1.0
-@Contact :   310484121@qq.com
-@License :   (C)Copyright 2017-2018, Liugroup-NLPR-CASIA
-@Desc    :   基于智谱 AI 大模型自定义 LLM 类
-'''
-
 from __future__ import annotations
 
 import logging
@@ -26,11 +14,11 @@ from langchain.callbacks.manager import (
     AsyncCallbackManagerForLLMRun,
     CallbackManagerForLLMRun,
 )
-from langchain.llms.base import LLM
 from langchain.pydantic_v1 import Field, root_validator
 from langchain.schema.output import GenerationChunk
 from langchain.utils import get_from_dict_or_env
-from llm.self_llm import Self_LLM
+
+from self_llm import Self_LLM
 
 logger = logging.getLogger(__name__)
 

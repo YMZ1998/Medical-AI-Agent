@@ -1,24 +1,14 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-'''
-@File    :   wenxin_llm.py
-@Time    :   2023/10/16 18:53:26
-@Author  :   Logan Zou 
-@Version :   1.0
-@Contact :   loganzou0421@163.com
-@License :   (C)Copyright 2017-2018, Liugroup-NLPR-CASIA
-@Desc    :   基于百度文心大模型自定义 LLM 类
-'''
-
-from langchain.llms.base import LLM
-from typing import Any, List, Mapping, Optional, Dict, Union, Tuple
-from pydantic import Field
-from llm.self_llm import Self_LLM
 import json
+from typing import Any, List, Optional
+
 import requests
 from langchain.callbacks.manager import CallbackManagerForLLMRun
+
+from self_llm import Self_LLM
+
+
 # 调用文心 API 的工具函数
-def get_access_token(api_key : str, secret_key : str):
+def get_access_token(api_key: str, secret_key: str):
     """
     使用 API Key，Secret Key 获取access_token，替换下列示例中的应用API Key、应用Secret Key
     """
@@ -34,12 +24,13 @@ def get_access_token(api_key : str, secret_key : str):
     response = requests.request("POST", url, headers=headers, data=payload)
     return response.json().get("access_token")
 
+
 class Wenxin_LLM(Self_LLM):
     # 文心大模型的自定义 LLM
     # URL
-    url : str = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/eb-instant?access_token={}"
+    url: str = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/eb-instant?access_token={}"
     # Secret_Key
-    secret_key : str = None
+    secret_key: str = None
     # access_token
     access_token: str = None
 
@@ -54,9 +45,9 @@ class Wenxin_LLM(Self_LLM):
         else:
             print("API_Key 或 Secret_Key 为空，请检查 Key")
 
-    def _call(self, prompt : str, stop: Optional[List[str]] = None,
-                run_manager: Optional[CallbackManagerForLLMRun] = None,
-                **kwargs: Any):
+    def _call(self, prompt: str, stop: Optional[List[str]] = None,
+              run_manager: Optional[CallbackManagerForLLMRun] = None,
+              **kwargs: Any):
         # 如果 access_token 为空，初始化 access_token
         if self.access_token == None:
             self.init_access_token()
@@ -66,11 +57,11 @@ class Wenxin_LLM(Self_LLM):
         payload = json.dumps({
             "messages": [
                 {
-                    "role": "user",# user prompt
-                    "content": "{}".format(prompt)# 输入的 prompt
+                    "role": "user",  # user prompt
+                    "content": "{}".format(prompt)  # 输入的 prompt
                 }
             ],
-            'temperature' : self.temperature
+            'temperature': self.temperature
         })
         headers = {
             'Content-Type': 'application/json'
@@ -84,7 +75,7 @@ class Wenxin_LLM(Self_LLM):
             return js["result"]
         else:
             return "请求失败"
-        
+
     @property
     def _llm_type(self) -> str:
         return "Wenxin"
