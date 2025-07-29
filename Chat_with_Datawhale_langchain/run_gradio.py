@@ -46,7 +46,6 @@ class ModelCenter:
             return "", chat_history
         except Exception as e:
             print("str(e): ", str(e))
-            # print("chat_history :", chat_history)
             return str(e), chat_history
 
     def qa_chain_self_answer(self, question: str, chat_history: list = [], model: str = "openai", embedding="openai",
@@ -121,7 +120,7 @@ with block as demo:
 
     with gr.Row():
         with gr.Column(scale=4):
-            chatbot = gr.Chatbot(height=600, show_copy_button=True, show_share_button=True,
+            chatbot = gr.Chatbot(height=800, show_copy_button=True, show_share_button=True,
                                  avatar_images=(app_config.aigc_logo_path, app_config.datawhale_avatar_path))
             msg = gr.Textbox(label="Prompt/问题")
             with gr.Row():
@@ -146,7 +145,12 @@ with block as demo:
                                   interactive=True)
                 embeddings = gr.Dropdown(app_config.embedding_model_list, label="Embedding model",
                                          value=app_config.init_embedding_model)
-
+            gr.Markdown("""
+            提醒：<br>
+            1. 使用时请先上传自己的知识文件，不然将会解析项目自带的知识库。<br>
+            2. 初始化数据库时间可能较长，请耐心等待。<br>
+            3. 使用中如果出现异常，将会在文本输入框进行展示，请不要惊慌。<br>
+            """)
         init_db.click(create_db_info, inputs=[file, embeddings], outputs=[msg])
         db_with_his_btn.click(model_center.chat_qa_chain_self_answer,
                               inputs=[msg, chatbot, llm, embeddings, temperature, top_k, history_len],
@@ -157,12 +161,7 @@ with block as demo:
         msg.submit(respond, inputs=[msg, chatbot, llm, history_len, temperature], outputs=[msg, chatbot])
         clear.click(model_center.clear_history)
 
-    gr.Markdown("""
-    提醒：<br>
-    1. 使用时请先上传自己的知识文件，不然将会解析项目自带的知识库。<br>
-    2. 初始化数据库时间可能较长，请耐心等待。<br>
-    3. 使用中如果出现异常，将会在文本输入框进行展示，请不要惊慌。<br>
-    """)
+
 
 gr.close_all()
 demo.launch()
