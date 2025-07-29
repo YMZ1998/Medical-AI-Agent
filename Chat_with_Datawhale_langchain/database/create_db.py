@@ -1,15 +1,18 @@
 import os
 import re
+import shutil
 import tempfile
+import time
 
 from langchain.document_loaders import PyMuPDFLoader
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.document_loaders import UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
+from loguru import logger
 
-from api_config import api_config
 from Chat_with_Datawhale_langchain.embedding.call_embedding import get_embedding
+from api_config import api_config
 
 dashscope_api_key = api_config.get_api_key()
 
@@ -29,7 +32,7 @@ def file_loader(file, loaders):
     if isinstance(file, tempfile._TemporaryFileWrapper):
         file = file.name
     if not os.path.isfile(file):
-        [file_loader(os.path.join(file, f), loaders) for f in  os.listdir(file)]
+        [file_loader(os.path.join(file, f), loaders) for f in os.listdir(file)]
         return
     file_type = file.split('.')[-1]
     if file_type == 'pdf':
@@ -44,12 +47,26 @@ def file_loader(file, loaders):
     return
 
 
+
 def create_db_info(files=DEFAULT_DB_PATH, embeddings="openai", persist_directory=DEFAULT_PERSIST_PATH):
-    print("create db info")
-    if embeddings == 'openai' or embeddings == 'm3e' or embeddings =='tongyi':
+    logger.add("logs/create_db.log", rotation="1 MB", retention="7 days", level="INFO")
+    logger.info("开始创建数据库信息")
+    start_time = time.time()
+
+    # 如果目录存在且非空，先删除
+    if os.path.exists(persist_directory) and os.listdir(persist_directory):
+        logger.warning("检测到已存在的向量数据库，正在删除旧数据...")
+        shutil.rmtree(persist_directory)
+        logger.info("旧数据库目录已清除：{}", persist_directory)
+
+    if embeddings in ('openai', 'm3e', 'tongyi'):
         vectordb = create_db(files, persist_directory, embeddings)
     else:
-        print("embedding model not support")
+        logger.error("不支持的 embedding 模型: {}", embeddings)
+        return ""
+
+    elapsed_time = time.time() - start_time
+    logger.success("数据库创建完成，耗时 {:.2f} 秒", elapsed_time)
     return ""
 
 
