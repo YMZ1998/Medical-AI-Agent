@@ -28,7 +28,6 @@ class ModelCenter:
             return "", chat_history
         try:
             print("model: ", model)
-            # print("chat_history :", chat_history)
             key = (model, embedding)
             if key not in self.chat_qa_chain_self:
                 self.chat_qa_chain_self[key] = Chat_QA_chain_self(
@@ -37,7 +36,7 @@ class ModelCenter:
                     top_k=top_k,
                     chat_history=chat_history,
                     file_path=file_path,
-                     persist_path=persist_path,
+                    persist_path=persist_path,
                     embedding=embedding
                 )
             chain = self.chat_qa_chain_self[key]
@@ -120,7 +119,7 @@ with block as demo:
 
     with gr.Row():
         with gr.Column(scale=4):
-            chatbot = gr.Chatbot(height=800, show_copy_button=True, show_share_button=True,
+            chatbot = gr.Chatbot(height=900, show_copy_button=True, show_share_button=True,
                                  avatar_images=(app_config.aigc_logo_path, app_config.datawhale_avatar_path))
             msg = gr.Textbox(label="Prompt/问题")
             with gr.Row():
@@ -160,8 +159,6 @@ with block as demo:
         llm_btn.click(respond, inputs=[msg, chatbot, llm, history_len, temperature], outputs=[msg, chatbot])
         msg.submit(respond, inputs=[msg, chatbot, llm, history_len, temperature], outputs=[msg, chatbot])
         clear.click(model_center.clear_history)
-
-
 
 gr.close_all()
 demo.launch()
