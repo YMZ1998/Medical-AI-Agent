@@ -1,6 +1,4 @@
-import os
 import gradio as gr
-from dotenv import load_dotenv
 from langchain_community.chat_models import ChatTongyi
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
