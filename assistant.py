@@ -1,11 +1,13 @@
-import os
 import datetime
+import os
 from http import HTTPStatus
+
 import gradio as gr
 from dashscope import Application
-from API import get_dashscope_api_key
 
-dashscope_api_key = get_dashscope_api_key()
+from API import api_config
+
+dashscope_api_key = api_config.get_api_key()
 app_id = os.getenv("DASHSCOPE_APP_ID")
 session_id = None  # 初始无会话
 

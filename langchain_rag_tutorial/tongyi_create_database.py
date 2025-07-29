@@ -7,10 +7,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import Chroma
 
-from API import get_dashscope_api_key
+from API import api_config
 from embeddings import TongyiEmbeddings
 
-dashscope_api_key = get_dashscope_api_key()
+dashscope_api_key = api_config.get_api_key()
 
 CHROMA_PATH = "chroma"
 DATA_PATH = "data/books"

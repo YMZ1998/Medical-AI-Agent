@@ -1,10 +1,10 @@
-from API import get_dashscope_api_key
+from API import api_config
 
 
-class Config:
+class APPConfig:
     def __init__(self):
         # API Key
-        self.dashscope_api_key = get_dashscope_api_key()
+        self.dashscope_api_key = api_config.get_api_key()
 
         # 模型配置
         self.llm_model_dict = {
@@ -30,5 +30,5 @@ class Config:
 
 
 if __name__ == "__main__":
-    config = Config()
+    config = APPConfig()
     print(config.llm_model_dict)

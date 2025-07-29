@@ -2,18 +2,17 @@ import re
 
 import gradio as gr
 
+from config import APPConfig
 from database.create_db import create_db_info
 from llm.call_llm import get_completion
 from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
 from qa_chain.QA_chain_self import QAChainSelf
 
-from config import Config
-
-config = Config()
+app_config = APPConfig()
 
 
 def get_model_by_platform(platform):
-    return config.llm_model_dict.get(platform, "")
+    return app_config.llm_model_dict.get(platform, "")
 
 
 class Model_center():
@@ -30,8 +29,8 @@ class Model_center():
 
     def chat_qa_chain_self_answer(self, question: str, chat_history: list = [], model: str = "openai",
                                   embedding: str = "openai", temperature: float = 0.0, top_k: int = 4,
-                                  history_len: int = 3, file_path: str = config.default_db_path,
-                                  persist_path: str = config.default_persist_path):
+                                  history_len: int = 3, file_path: str = app_config.default_db_path,
+                                  persist_path: str = app_config.default_persist_path):
         """
         调用带历史记录的问答链进行回答
         """
@@ -50,8 +49,8 @@ class Model_center():
             return e, chat_history
 
     def qa_chain_self_answer(self, question: str, chat_history: list = [], model: str = "openai", embedding="openai",
-                             temperature: float = 0.0, top_k: int = 4, file_path: str = config.default_db_path,
-                             persist_path: str = config.default_persist_path):
+                             temperature: float = 0.0, top_k: int = 4, file_path: str = app_config.default_db_path,
+                             persist_path: str = app_config.default_persist_path):
         """
         调用不带历史记录的问答链进行回答
         """
@@ -140,20 +139,20 @@ model_center = Model_center()
 block = gr.Blocks()
 with block as demo:
     with gr.Row(equal_height=True):
-        gr.Image(value=config.aigc_logo_path, scale=1, min_width=10, show_label=False, show_download_button=False,
+        gr.Image(value=app_config.aigc_logo_path, scale=1, min_width=10, show_label=False, show_download_button=False,
                  container=False)
 
         with gr.Column(scale=2):
             gr.Markdown("""<h1><center>动手学大模型应用开发</center></h1>
                 <center>LLM-UNIVERSE</center>
                 """)
-        gr.Image(value=config.datawhale_logo_path, scale=1, min_width=10, show_label=False, show_download_button=False,
+        gr.Image(value=app_config.datawhale_logo_path, scale=1, min_width=10, show_label=False, show_download_button=False,
                  container=False)
 
     with gr.Row():
         with gr.Column(scale=4):
             chatbot = gr.Chatbot(height=400, show_copy_button=True, show_share_button=True,
-                                 avatar_images=(config.aigc_logo_path, config.datawhale_logo_path))
+                                 avatar_images=(app_config.aigc_logo_path, app_config.datawhale_logo_path))
             # 创建一个文本框组件，用于输入 prompt。
             msg = gr.Textbox(label="Prompt/问题")
 
@@ -198,14 +197,14 @@ with block as demo:
             model_select = gr.Accordion("模型选择")
             with model_select:
                 llm = gr.Dropdown(
-                    config.llm_model_list,
+                    app_config.llm_model_list,
                     label="large language model",
-                    value=config.init_llm,
+                    value=app_config.init_llm,
                     interactive=True)
 
-                embeddings = gr.Dropdown(config.embedding_model_list,
+                embeddings = gr.Dropdown(app_config.embedding_model_list,
                                          label="Embedding model",
-                                         value=config.init_embedding_model)
+                                         value=app_config.init_embedding_model)
 
         # 设置初始化向量数据库按钮的点击事件。当点击时，调用 create_db_info 函数，并传入用户的文件和希望使用的 Embedding 模型。
         init_db.click(create_db_info,

@@ -2,10 +2,10 @@ import os
 
 from langchain.evaluation import load_evaluator
 
-from API import get_dashscope_api_key
+from API import api_config
 from embeddings import TongyiEmbeddings
 
-dashscope_api_key = get_dashscope_api_key()
+dashscope_api_key = api_config.get_api_key()
 
 def main():
     # 初始化 Tongyi Embeddings

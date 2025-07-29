@@ -1,15 +1,11 @@
-import os
-from typing import Any, Dict, List, Optional
-
 import logging
-import requests
-from langchain_core.embeddings import Embeddings
-from pydantic import BaseModel, SecretStr, root_validator, model_validator
-from langchain_core.utils import convert_to_secret_str, get_from_dict_or_env
-
-from typing import Generator, List
-import dashscope
+import os
 from http import HTTPStatus
+from typing import Dict, Optional
+from typing import Generator, List
+
+import dashscope
+from langchain_core.embeddings import Embeddings
 
 logger = logging.getLogger(__name__)
 

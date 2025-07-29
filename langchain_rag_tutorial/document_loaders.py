@@ -1,10 +1,11 @@
-from langchain_community.document_loaders import TextLoader, PyPDFLoader
-from langchain_core.documents import Document
-from langchain_community.chat_models import ChatTongyi
-from API import get_dashscope_api_key
 import os
 
-dashscope_api_key = get_dashscope_api_key()
+from langchain_community.chat_models import ChatTongyi
+from langchain_community.document_loaders import TextLoader
+
+from API import api_config
+
+dashscope_api_key = api_config.get_api_key()
 
 loader = TextLoader("./data/test.md", encoding="utf-8")
 docs = loader.load()
