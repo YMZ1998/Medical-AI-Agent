@@ -47,6 +47,7 @@ def file_loader(file, loaders):
     return
 
 
+
 def create_db_info(files=DEFAULT_DB_PATH, embeddings="openai", persist_directory=DEFAULT_PERSIST_PATH):
     logger.add("logs/create_db.log", rotation="1 MB", retention="7 days", level="INFO")
     logger.info("开始创建数据库信息")
