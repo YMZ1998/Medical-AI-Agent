@@ -5,31 +5,15 @@ import gradio as gr
 from database.create_db import create_db_info
 from llm.call_llm import get_completion
 from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
-from qa_chain.QA_chain_self import QA_chain_self
+from qa_chain.QA_chain_self import QAChainSelf
 
-from API import get_dashscope_api_key
+from config import Config
 
-dashscope_api_key = get_dashscope_api_key()
-
-LLM_MODEL_DICT = {
-    "openai": ["gpt-3.5-turbo", "gpt-4", "gpt-4-32k"],
-    "tongyi": ["qwen-turbo", "qwen-plus", "qwen-turbo-latest", "qwen-plus-latest"]
-}
-
-LLM_MODEL_LIST = sum(list(LLM_MODEL_DICT.values()), [])
-INIT_LLM = "qwen-turbo"
-EMBEDDING_MODEL_LIST = ['tongyi', 'openai']
-INIT_EMBEDDING_MODEL = "tongyi"
-DEFAULT_DB_PATH = "./knowledge_db"
-DEFAULT_PERSIST_PATH = "./vector_db/chroma"
-AIGC_AVATAR_PATH = "./figures/aigc_avatar.png"
-DATAWHALE_AVATAR_PATH = "./figures/datawhale_avatar.png"
-AIGC_LOGO_PATH = "./figures/aigc_logo.png"
-DATAWHALE_LOGO_PATH = "./figures/datawhale_logo.png"
+config = Config()
 
 
 def get_model_by_platform(platform):
-    return LLM_MODEL_DICT.get(platform, "")
+    return config.llm_model_dict.get(platform, "")
 
 
 class Model_center():
@@ -46,8 +30,8 @@ class Model_center():
 
     def chat_qa_chain_self_answer(self, question: str, chat_history: list = [], model: str = "openai",
                                   embedding: str = "openai", temperature: float = 0.0, top_k: int = 4,
-                                  history_len: int = 3, file_path: str = DEFAULT_DB_PATH,
-                                  persist_path: str = DEFAULT_PERSIST_PATH):
+                                  history_len: int = 3, file_path: str = config.default_db_path,
+                                  persist_path: str = config.default_persist_path):
         """
         调用带历史记录的问答链进行回答
         """
@@ -66,8 +50,8 @@ class Model_center():
             return e, chat_history
 
     def qa_chain_self_answer(self, question: str, chat_history: list = [], model: str = "openai", embedding="openai",
-                             temperature: float = 0.0, top_k: int = 4, file_path: str = DEFAULT_DB_PATH,
-                             persist_path: str = DEFAULT_PERSIST_PATH):
+                             temperature: float = 0.0, top_k: int = 4, file_path: str = config.default_db_path,
+                             persist_path: str = config.default_persist_path):
         """
         调用不带历史记录的问答链进行回答
         """
@@ -78,9 +62,9 @@ class Model_center():
         print("question: ", question)
         try:
             if (model, embedding) not in self.qa_chain_self:
-                self.qa_chain_self[(model, embedding)] = QA_chain_self(model=model, temperature=temperature,
-                                                                       top_k=top_k, file_path=file_path,
-                                                                       persist_path=persist_path, embedding=embedding)
+                self.qa_chain_self[(model, embedding)] = QAChainSelf(model=model, temperature=temperature,
+                                                                     top_k=top_k, file_path=file_path,
+                                                                     persist_path=persist_path, embedding=embedding)
             chain = self.qa_chain_self[(model, embedding)]
             chat_history.append(
                 (question, chain.answer(question, temperature, top_k)))
@@ -156,20 +140,20 @@ model_center = Model_center()
 block = gr.Blocks()
 with block as demo:
     with gr.Row(equal_height=True):
-        gr.Image(value=AIGC_LOGO_PATH, scale=1, min_width=10, show_label=False, show_download_button=False,
+        gr.Image(value=config.aigc_logo_path, scale=1, min_width=10, show_label=False, show_download_button=False,
                  container=False)
 
         with gr.Column(scale=2):
             gr.Markdown("""<h1><center>动手学大模型应用开发</center></h1>
                 <center>LLM-UNIVERSE</center>
                 """)
-        gr.Image(value=DATAWHALE_LOGO_PATH, scale=1, min_width=10, show_label=False, show_download_button=False,
+        gr.Image(value=config.datawhale_logo_path, scale=1, min_width=10, show_label=False, show_download_button=False,
                  container=False)
 
     with gr.Row():
         with gr.Column(scale=4):
             chatbot = gr.Chatbot(height=400, show_copy_button=True, show_share_button=True,
-                                 avatar_images=(AIGC_AVATAR_PATH, DATAWHALE_AVATAR_PATH))
+                                 avatar_images=(config.aigc_logo_path, config.datawhale_logo_path))
             # 创建一个文本框组件，用于输入 prompt。
             msg = gr.Textbox(label="Prompt/问题")
 
@@ -214,14 +198,14 @@ with block as demo:
             model_select = gr.Accordion("模型选择")
             with model_select:
                 llm = gr.Dropdown(
-                    LLM_MODEL_LIST,
+                    config.llm_model_list,
                     label="large language model",
-                    value=INIT_LLM,
+                    value=config.init_llm,
                     interactive=True)
 
-                embeddings = gr.Dropdown(EMBEDDING_MODEL_LIST,
+                embeddings = gr.Dropdown(config.embedding_model_list,
                                          label="Embedding model",
-                                         value=INIT_EMBEDDING_MODEL)
+                                         value=config.init_embedding_model)
 
         # 设置初始化向量数据库按钮的点击事件。当点击时，调用 create_db_info 函数，并传入用户的文件和希望使用的 Embedding 模型。
         init_db.click(create_db_info,
