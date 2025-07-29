@@ -19,7 +19,7 @@ class APPConfig:
         self.init_embedding_model = "tongyi"
 
         # 向量库路径
-        self.default_db_path = "./knowledge_db"
+        self.default_db_path = "./database/readme_db"
         self.default_persist_path = "./vector_db"
 
         # UI 相关资源路径
