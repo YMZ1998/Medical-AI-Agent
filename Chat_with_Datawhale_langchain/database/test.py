@@ -1,9 +1,10 @@
 from langchain.vectorstores import Chroma
 
-from API import get_dashscope_api_key
+from api_config import api_config
+
 from Chat_with_Datawhale_langchain.embedding.call_embedding import get_embedding
 
-dashscope_api_key = get_dashscope_api_key()
+dashscope_api_key = api_config.get_api_key()
 
 embedding = get_embedding("tongyi")
 

@@ -3,7 +3,7 @@ import os
 from langchain_community.chat_models import ChatTongyi
 from langchain_community.document_loaders import TextLoader
 
-from API import api_config
+from api_config import api_config
 
 dashscope_api_key = api_config.get_api_key()
 

@@ -7,7 +7,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import Chroma
 
-from API import api_config
+from api_config import api_config
 from embeddings import TongyiEmbeddings
 
 dashscope_api_key = api_config.get_api_key()

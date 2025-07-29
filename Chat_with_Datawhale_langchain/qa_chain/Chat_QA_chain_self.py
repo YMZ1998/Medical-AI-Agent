@@ -95,7 +95,7 @@ class Chat_QA_chain_self:
 
 
 if __name__ == '__main__':
-    from API import api_config
+    from api_config import api_config
 
     dashscope_api_key = api_config.get_api_key()
     chatbot = Chat_QA_chain_self(

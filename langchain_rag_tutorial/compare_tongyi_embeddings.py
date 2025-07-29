@@ -2,7 +2,7 @@ import os
 
 from langchain.evaluation import load_evaluator
 
-from API import api_config
+from api_config import api_config
 from embeddings import TongyiEmbeddings
 
 dashscope_api_key = api_config.get_api_key()

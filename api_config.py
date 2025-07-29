@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 class APIConfig:
     _instance = None
 
-    def __new__(cls, env_path: str = "API.env"):
+    def __new__(cls, env_path: str = "api.env"):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialize(env_path)

@@ -5,9 +5,9 @@ from langchain_community.chat_models import ChatTongyi
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
 
-load_dotenv("API.env")
-api_key = os.getenv("DASHSCOPE_API_KEY")
-print("API KEY:", api_key)
+from api_config import api_config
+
+api_key = api_config.get_api_key()
 
 llm = ChatTongyi(
     dashscope_api_key=api_key,
@@ -17,6 +17,7 @@ llm = ChatTongyi(
 
 chat_history = [SystemMessage(content="You are a helpful financial assistant named Joey.")]
 
+
 def chat_interface(user_input, history):
     print("User:", user_input)
     chat_history.append(HumanMessage(content=user_input))
@@ -25,6 +26,7 @@ def chat_interface(user_input, history):
     history.append((user_input, response))
     print("AI:", response)
     return history, history, ""  # 返回 history、state、清空输入框
+
 
 with gr.Blocks() as demo:
     gr.Markdown("## 🧑‍💼 金融助手 Joey")
@@ -39,10 +41,12 @@ with gr.Blocks() as demo:
     msg.submit(chat_interface, [msg, state], [chatbot, state, msg])
     send.click(chat_interface, [msg, state], [chatbot, state, msg])
 
+
     def reset_chat():
         chat_history.clear()
         chat_history.append(SystemMessage(content="You are a helpful financial assistant named Joey."))
         return [], []
+
 
     clear.click(reset_chat, None, [chatbot, state])
 

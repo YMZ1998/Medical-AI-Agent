@@ -1,4 +1,4 @@
-from API import api_config
+from api_config import api_config
 
 
 class APPConfig:

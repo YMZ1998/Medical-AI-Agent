@@ -5,7 +5,7 @@ from langchain.prompts import ChatPromptTemplate
 from langchain_community.chat_models import ChatTongyi
 from langchain_community.vectorstores import Chroma
 
-from API import api_config
+from api_config import api_config
 from embeddings import TongyiEmbeddings
 
 dashscope_api_key = api_config.get_api_key()

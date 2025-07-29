@@ -5,7 +5,9 @@ from langchain_community.chat_models import ChatTongyi
 from langchain.schema import HumanMessage
 from langchain_core.prompts import PromptTemplate
 
-load_dotenv('API.env')
+from api_config import api_config
+
+api_key = api_config.get_api_key()
 os.environ["DASHSCOPE_API_KEY"] = os.getenv("DASHSCOPE_API_KEY")
 
 

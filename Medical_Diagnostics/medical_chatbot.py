@@ -5,10 +5,9 @@ from langchain_community.chat_models import ChatTongyi
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
 
-from API import get_dashscope_api_key
+from api_config import api_config
 
-dashscope_api_key = get_dashscope_api_key()
-api_key = os.getenv("DASHSCOPE_API_KEY")
+api_key = api_config.get_api_key()
 
 llm = ChatTongyi(
     dashscope_api_key=api_key,
