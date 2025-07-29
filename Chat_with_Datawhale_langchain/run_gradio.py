@@ -73,6 +73,9 @@ class Model_center():
         """
         if question == None or len(question) < 1:
             return "", chat_history
+
+        print("qa_chain_self_answer")
+        print("question: ", question)
         try:
             if (model, embedding) not in self.qa_chain_self:
                 self.qa_chain_self[(model, embedding)] = QA_chain_self(model=model, temperature=temperature,

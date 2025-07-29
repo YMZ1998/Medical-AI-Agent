@@ -40,7 +40,7 @@ class Chat_QA_chain_self:
         self.vectordb = get_vectordb(self.file_path, self.persist_path, self.embedding, self.embedding_key)
 
     def clear_history(self):
-        "清空历史记录"
+        """清空历史记录"""
         return self.chat_history.clear()
 
     def change_history_length(self, history_len: int = 1):
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         embedding_key=dashscope_api_key
     )
 
-    questions = ["这只猫名字叫什么？", "这只猫每天早上干什么？"]
+    questions = ["这只猫名字叫什么？", "这只猫每天早上干什么？", "这是一个什么故事？"]
     for question in questions:
         answer = chatbot.answer(question)
-        print("答复:", answer)
+        print("对话:", answer[-1])
