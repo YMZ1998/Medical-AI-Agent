@@ -12,6 +12,7 @@ class QARequest(BaseModel):
     default_db_path: str = app_config.default_db_path
     default_persist_path: str = app_config.default_persist_path
     dashscope_api_key: str = app_config.dashscope_api_key
+    init_embedding_model: str = app_config.init_embedding_model
 
 
 # 默认 prompt 模板
@@ -46,7 +47,7 @@ async def get_response(item: QARequest):
         file_path=item.default_db_path,
         persist_path=item.default_persist_path,
         api_key=item.dashscope_api_key,
-        embedding="tongyi",  # 或也可以从 item 中传入
+        embedding=item.init_embedding_model,
         template=DEFAULT_TEMPLATE,
         embedding_key=item.dashscope_api_key
     )
@@ -54,7 +55,6 @@ async def get_response(item: QARequest):
     return {"response": response}
 
 
-# 可选：本地调试运行
 if __name__ == "__main__":
     import uvicorn
 
