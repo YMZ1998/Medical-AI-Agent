@@ -18,6 +18,7 @@ def get_completion(prompt: str, model: str, temperature=0.1, api_key=None, max_t
     # max_tokens : 返回最长序列
     # return: 模型返回，字符串
     # 调用 GPT
+    print("model: ", model)
     if model in ["gpt-3.5-turbo", "gpt-3.5-turbo-16k-0613", "gpt-3.5-turbo-0613", "gpt-4", "gpt-4-32k"]:
         return get_completion_gpt(prompt, model, temperature, api_key, max_tokens)
     elif model in ["qwen-turbo", "qwen-plus", "qwen-turbo-latest", "qwen-plus-latest"]:

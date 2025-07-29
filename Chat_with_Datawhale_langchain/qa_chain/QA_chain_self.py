@@ -99,9 +99,9 @@ class QAChainSelf:
 
 
 if __name__ == '__main__':
-    from API import get_dashscope_api_key
+    from API import api_config
 
-    dashscope_api_key = get_dashscope_api_key()
+    dashscope_api_key = api_config.get_api_key()
     chatbot = QAChainSelf(
         model="qwen-turbo",
         file_path="../../langchain_rag_tutorial/data/test.md",

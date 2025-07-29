@@ -2,13 +2,11 @@ import re
 
 import gradio as gr
 
-from config import APPConfig
+from Chat_with_Datawhale_langchain.app_config import app_config
 from database.create_db import create_db_info
 from llm.call_llm import get_completion
 from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
 from qa_chain.QA_chain_self import QAChainSelf
-
-app_config = APPConfig()
 
 
 def get_model_by_platform(platform):
@@ -44,7 +42,7 @@ class Model_center():
                                                                                  persist_path=persist_path,
                                                                                  embedding=embedding)
             chain = self.chat_qa_chain_self[(model, embedding)]
-            return "", chain.answer(question=question, temperature=temperature, top_k=top_k)
+            return "", chain.answer(question, temperature, top_k)
         except Exception as e:
             return e, chat_history
 

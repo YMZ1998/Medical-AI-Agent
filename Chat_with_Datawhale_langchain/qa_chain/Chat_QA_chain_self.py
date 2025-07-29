@@ -80,21 +80,26 @@ class Chat_QA_chain_self:
             retriever=retriever
         )
 
-        # print(self.llm)
+        self.chat_history = [
+            (str(item[0]), str(item[1])) for item in self.chat_history if
+            isinstance(item, (list, tuple)) and len(item) == 2
+        ]
+        # print("self.chat_history: ",self.chat_history)
+
         result = qa({"question": question, "chat_history": self.chat_history})  # result里有question、chat_history、answer
         answer = result['answer']
         answer = re.sub(r"\\n", '<br/>', answer)
         self.chat_history.append((question, answer))  # 更新历史记录
 
-        return self.chat_history  # 返回本次回答和更新后的历史记录
+        return answer, self.chat_history  # 返回本次回答和更新后的历史记录
 
 
 if __name__ == '__main__':
-    from API import get_dashscope_api_key
+    from API import api_config
 
-    dashscope_api_key = get_dashscope_api_key()
+    dashscope_api_key = api_config.get_api_key()
     chatbot = Chat_QA_chain_self(
-        model="qwen-turbo",
+        model="qwen-turbo-latest",
         file_path="../../langchain_rag_tutorial/data/test.md",
         persist_path="./vector_db/",
         api_key=dashscope_api_key,
@@ -104,5 +109,8 @@ if __name__ == '__main__':
 
     questions = ["这只猫名字叫什么？", "这只猫每天早上干什么？", "这是一个什么故事？"]
     for question in questions:
-        answer = chatbot.answer(question)
-        print("对话:", answer[-1])
+        answer, history = chatbot.answer(question)
+        print(f"用户: {question}")
+        print(f"助手: {answer}")
+        print(f"历史记录: {history}")
+        print("-" * 30)

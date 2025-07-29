@@ -29,6 +29,7 @@ class APPConfig:
         self.datawhale_logo_path = "./figures/datawhale_logo.png"
 
 
+app_config = APPConfig()
+
 if __name__ == "__main__":
-    config = APPConfig()
-    print(config.llm_model_dict)
+    print(app_config.llm_model_dict)

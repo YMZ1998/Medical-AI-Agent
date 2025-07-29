@@ -2,32 +2,31 @@ from langchain.chat_models import ChatOpenAI
 from langchain_community.chat_models import ChatTongyi
 
 from Chat_with_Datawhale_langchain.llm.call_llm import parse_llm_api_key
+from Chat_with_Datawhale_langchain.app_config import app_config
+
+
+# 注册模型构造器
+LLM_BUILDERS = {
+    "openai": lambda model, temp, key: ChatOpenAI(model_name=model, temperature=temp, openai_api_key=key),
+    "tongyi": lambda model, temp, key: ChatTongyi(model_name=model, temperature=temp, dashscope_api_key=key),
+}
 
 
 def model_to_llm(model: str = None,
                  temperature: float = 0.0,
                  api_key: str = None):
     """
-    OpenAI：model,temperature,api_key
-    通义千问：model,temperature,api_key
+    根据模型名称返回对应的 LLM 实例
+    支持 openai / 通义千问 等
     """
 
-    if model in ["gpt-3.5-turbo", "gpt-3.5-turbo-16k-0613", "gpt-3.5-turbo-0613", "gpt-4", "gpt-4-32k"]:
-        if api_key is None:
-            api_key = parse_llm_api_key("openai")
-        llm = ChatOpenAI(model_name=model, temperature=temperature, openai_api_key=api_key)
+    for platform, model_list in app_config.llm_model_dict.items():
+        if model in model_list:
+            if api_key is None:
+                api_key = parse_llm_api_key(platform)
+            if platform in LLM_BUILDERS:
+                return LLM_BUILDERS[platform](model, temperature, api_key)
+            else:
+                raise ValueError(f"未注册的平台: {platform}")
 
-    elif model in [
-        "qwen-turbo",
-        "qwen-plus",
-        "qwen-max",
-        "qwen-max-longcontext",
-    ]:
-        if api_key is None:
-            api_key = parse_llm_api_key("tongyi")
-        llm = ChatTongyi(dashscope_api_key=api_key, model_name=model, temperature=temperature)
-
-    else:
-        raise ValueError(f"model {model} not supported!!!")
-
-    return llm
+    raise ValueError(f"不支持的模型: {model}")
