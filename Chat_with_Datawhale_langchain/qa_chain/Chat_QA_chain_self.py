@@ -2,7 +2,6 @@ import re
 
 from langchain.chains import ConversationalRetrievalChain
 
-from API import get_dashscope_api_key
 from Chat_with_Datawhale_langchain.qa_chain.get_vectordb import get_vectordb
 from Chat_with_Datawhale_langchain.qa_chain.model_to_llm import model_to_llm
 
@@ -91,6 +90,8 @@ class Chat_QA_chain_self:
 
 
 if __name__ == '__main__':
+    from API import get_dashscope_api_key
+
     dashscope_api_key = get_dashscope_api_key()
     chatbot = Chat_QA_chain_self(
         model="qwen-turbo",

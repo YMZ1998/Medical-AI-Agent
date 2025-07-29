@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
@@ -7,28 +8,38 @@ from Chat_with_Datawhale_langchain.qa_chain.get_vectordb import get_vectordb
 from Chat_with_Datawhale_langchain.qa_chain.model_to_llm import model_to_llm
 
 
-class QA_chain_self():
-    """"
+class QAChainSelf:
+    """
     不带历史记录的问答链
-    - model：调用的模型名称
-    - temperature：温度系数，控制生成的随机性
-    - top_k：返回检索的前k个相似文档
-    - file_path：建库文件所在路径
-    - persist_path：向量数据库持久化路径
-    - api_key：所有模型都需要
-    - embedding_key：使用的embedding模型的秘钥（智谱或者OpenAI）
-    - template：可以自定义提示模板，没有输入则使用默认的提示模板default_template_rq    
     """
 
-    # 基于召回结果和 query 结合起来构建的 prompt使用的默认提示模版
-    default_template_rq = """使用以下上下文来回答最后的问题。如果你不知道答案，就说你不知道，不要试图编造答
-    案。最多使用三句话。尽量使答案简明扼要。总是在回答的最后说“谢谢你的提问！”。
-    {context}
-    问题: {question}
-    有用的回答:"""
+    DEFAULT_TEMPLATE = """
+    你是一个专业问答助手，请根据以下提供的上下文简明准确地回答用户问题。
 
-    def __init__(self, model: str, temperature: float = 0.0, top_k: int = 4, file_path: str = None,
-                 persist_path: str = None, api_key: str = None, embedding="openai", embedding_key=None, template=default_template_rq):
+    - 如果无法从上下文中找到答案，请直接说“我不知道”，不要编造内容。
+    - 语言简洁清晰，逻辑通顺。
+
+    上下文：
+    {context}
+
+    问题：
+    {question}
+
+    回答：
+    """
+
+    def __init__(
+        self,
+        model: str,
+        temperature: float = 0.0,
+        top_k: int = 4,
+        file_path: Optional[str] = None,
+        persist_path: Optional[str] = None,
+        api_key: Optional[str] = None,
+        embedding: str = "openai",
+        embedding_key: Optional[str] = None,
+        template: Optional[str] = None,
+    ):
         self.model = model
         self.temperature = temperature
         self.top_k = top_k
@@ -37,40 +48,71 @@ class QA_chain_self():
         self.api_key = api_key
         self.embedding = embedding
         self.embedding_key = embedding_key
-        self.template = template
+        self.template = template or self.DEFAULT_TEMPLATE
+
+        # 初始化向量数据库和大模型
         self.vectordb = get_vectordb(self.file_path, self.persist_path, self.embedding, self.embedding_key)
+
         self.llm = model_to_llm(self.model, self.temperature, self.api_key)
 
-        self.QA_CHAIN_PROMPT = PromptTemplate(input_variables=["context", "question"],
-                                              template=self.template)
-        self.retriever = self.vectordb.as_retriever(search_type="similarity",
-                                                    search_kwargs={'k': self.top_k})  # 默认similarity，k=4
-        # 自定义 QA 链
-        self.qa_chain = RetrievalQA.from_chain_type(llm=self.llm,
-                                                    retriever=self.retriever,
-                                                    return_source_documents=True,
-                                                    chain_type_kwargs={"prompt": self.QA_CHAIN_PROMPT})
+        self.qa_chain_prompt = PromptTemplate(
+            input_variables=["context", "question"],
+            template=self.template,
+        )
 
-    # 基于大模型的问答 prompt 使用的默认提示模版
-    # default_template_llm = """请回答下列问题:{question}"""
+        self.retriever = self.vectordb.as_retriever(
+            search_type="similarity", search_kwargs={"k": self.top_k}
+        )
 
-    def answer(self, question: str = None, temperature=None, top_k=4):
-        """"
-        核心方法，调用问答链
-        arguments: 
-        - question：用户提问
+        self.qa_chain = RetrievalQA.from_chain_type(
+            llm=self.llm,
+            retriever=self.retriever,
+            return_source_documents=True,
+            chain_type_kwargs={"prompt": self.qa_chain_prompt},
+        )
+
+    def answer(
+        self,
+        question: str,
+        temperature: Optional[float] = None,
+        top_k: Optional[int] = None,
+    ) -> str:
         """
+        调用问答链，返回答案
+        """
+        if not question.strip():
+            return "请输入有效问题"
 
-        if len(question) == 0:
-            return ""
+        temperature = temperature if temperature is not None else self.temperature
+        top_k = top_k if top_k is not None else self.top_k
 
-        if temperature == None:
-            temperature = self.temperature
+        try:
+            result = self.qa_chain({
+                "query": question,
+                "temperature": temperature,
+                "top_k": top_k
+            })
+            answer = result.get("result", "未能生成答案")
+            return re.sub(r"\\n", "<br/>", answer)
+        except Exception as e:
+            return f"出错了: {str(e)}"
 
-        if top_k == None:
-            top_k = self.top_k
 
-        result = self.qa_chain({"query": question, "temperature": temperature, "top_k": top_k})
-        answer = result["result"]
-        answer = re.sub(r"\\n", '<br/>', answer)
-        return answer
+if __name__ == '__main__':
+    from API import get_dashscope_api_key
+
+    dashscope_api_key = get_dashscope_api_key()
+    chatbot = QAChainSelf(
+        model="qwen-turbo",
+        file_path="../../langchain_rag_tutorial/data/test.md",
+        persist_path="./vector_db",
+        api_key=dashscope_api_key,
+        embedding="tongyi",
+        embedding_key=dashscope_api_key
+    )
+
+    questions = ["这只猫名字叫什么？", "这只猫每天早上干什么？", "这是一个什么故事？"]
+    for question in questions:
+        answer = chatbot.answer(question)
+        print("question:", question)
+        print("answer:", answer)
