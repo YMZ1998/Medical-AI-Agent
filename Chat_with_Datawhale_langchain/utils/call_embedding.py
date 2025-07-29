@@ -3,7 +3,7 @@ import os
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.embeddings.openai import OpenAIEmbeddings
 
-from Chat_with_Datawhale_langchain.llm.call_llm import parse_llm_api_key
+from Chat_with_Datawhale_langchain.utils.call_llm import parse_llm_api_key
 from langchain_rag_tutorial.embeddings import TongyiEmbeddings
 
 

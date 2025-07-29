@@ -4,7 +4,7 @@ import gradio as gr
 
 from Chat_with_Datawhale_langchain.app_config import app_config
 from database.create_db import create_db_info
-from llm.call_llm import get_completion
+from utils.call_llm import get_completion
 from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
 from qa_chain.QA_chain_self import QAChainSelf
 

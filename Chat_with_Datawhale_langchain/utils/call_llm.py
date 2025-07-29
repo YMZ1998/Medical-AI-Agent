@@ -5,11 +5,9 @@ from http import HTTPStatus
 
 import openai
 from dashscope import Generation
-from dotenv import load_dotenv, find_dotenv
 
 
 def get_completion(prompt: str, model: str, temperature=0.1, api_key=None, max_tokens=2048):
-    # 调用大模型获取回复，支持上述三种模型+gpt
     # arguments:
     # prompt: 输入提示
     # model：模型名
@@ -28,11 +26,9 @@ def get_completion(prompt: str, model: str, temperature=0.1, api_key=None, max_t
 
 
 def get_completion_gpt(prompt: str, model: str, temperature: float, api_key: str, max_tokens: int):
-    # 封装 OpenAI 原生接口
     if api_key == None:
         api_key = parse_llm_api_key("openai")
     openai.api_key = api_key
-    # 具体调用
     messages = [{"role": "user", "content": prompt}]
     response = openai.ChatCompletion.create(
         model=model,
@@ -40,7 +36,6 @@ def get_completion_gpt(prompt: str, model: str, temperature: float, api_key: str
         temperature=temperature,  # 模型输出的温度系数，控制输出的随机程度
         max_tokens=max_tokens,  # 回复最大长度
     )
-    # 调用 OpenAI 的 ChatCompletion 接口
     return response.choices[0].message["content"]
 
 
@@ -152,16 +147,10 @@ def gen_params(appid, domain, question, temperature, max_tokens):
     return data
 
 
-def parse_llm_api_key(model: str, env_file: dict() = None):
-    """
-    通过 model 和 env_file 的来解析平台参数
-    """
-    if env_file == None:
-        _ = load_dotenv(find_dotenv())
-        env_file = os.environ
+def parse_llm_api_key(model: str):
     if model == "openai":
-        return env_file["OPENAI_API_KEY"]
+        return os.getenv("OPENAI_API_KEY")
     elif model == "tongyi":
-        return env_file["DASHSCOPE_API_KEY"]
+        return os.getenv("DASHSCOPE_API_KEY")
     else:
-        raise ValueError(f"model{model} not support!!!")
+        raise ValueError(f"model {model} not support!!!")

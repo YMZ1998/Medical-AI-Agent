@@ -1,7 +1,7 @@
 from langchain.chat_models import ChatOpenAI
 from langchain_community.chat_models import ChatTongyi
 
-from Chat_with_Datawhale_langchain.llm.call_llm import parse_llm_api_key
+from Chat_with_Datawhale_langchain.utils.call_llm import parse_llm_api_key
 from Chat_with_Datawhale_langchain.app_config import app_config
 
 

@@ -1,6 +1,6 @@
 import os
 from Chat_with_Datawhale_langchain.database.create_db import create_db, load_knowledge_db
-from Chat_with_Datawhale_langchain.embedding.call_embedding import get_embedding
+from Chat_with_Datawhale_langchain.utils.call_embedding import get_embedding
 
 def get_vectordb(
     file_path: str = None,
