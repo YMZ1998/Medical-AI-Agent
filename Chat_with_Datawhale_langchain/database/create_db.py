@@ -29,8 +29,10 @@ def get_files(dir_path):
 
 
 def file_loader(file, loaders):
-    if isinstance(file, tempfile._TemporaryFileWrapper):
+    if hasattr(file, 'name') and isinstance(file.name, str):
         file = file.name
+    # if isinstance(file, tempfile._TemporaryFileWrapper):
+    #     file = file.name
     if not os.path.isfile(file):
         [file_loader(os.path.join(file, f), loaders) for f in os.listdir(file)]
         return

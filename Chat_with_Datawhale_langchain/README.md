@@ -91,7 +91,7 @@ uvicorn api:app --reload
 ```shell
 # Windows 系统
 cd project/serve
-python api.py
+python run_api.py
 ```
 - 运行项目
 ```shell
