@@ -1,5 +1,3 @@
-import _thread as thread
-import json
 import os
 from http import HTTPStatus
 
