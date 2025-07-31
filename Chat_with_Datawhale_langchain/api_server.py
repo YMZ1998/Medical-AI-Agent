@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from Chat_with_Datawhale_langchain.app_config import app_config
+from Chat_with_Datawhale_langchain.qa_chain.chat_qa_chain_simple import Chat_QA_chain_simple
+from Chat_with_Datawhale_langchain.utils.template import medical_templates
 from qa_chain.QA_chain_self import QAChainSelf
 
 
@@ -16,19 +18,8 @@ class QARequest(BaseModel):
 
 
 # 默认 prompt 模板
-DEFAULT_TEMPLATE = """
-你是一个专业医生，请根据提供的上下文简明准确地回答用户问题。
-
-- 语言简洁清晰，逻辑通顺。
-
-上下文：
-{context}
-
-问题：
-{question}
-
-回答：
-"""
+mode = "general"  # 可选 "general", "vulnerable", "diagnosis"
+print(medical_templates.get(mode))
 app = FastAPI()
 
 app.add_middleware(
@@ -42,14 +33,20 @@ app.add_middleware(
 
 @app.post("/chat")
 async def get_response(item: QARequest):
-    chain = QAChainSelf(
+    # chain = QAChainSelf(
+    #     model=item.init_llm,
+    #     file_path=item.default_db_path,
+    #     persist_path=item.default_persist_path,
+    #     api_key=item.dashscope_api_key,
+    #     embedding=item.init_embedding_model,
+    #     template=medical_templates.get(mode),
+    #     embedding_key=item.dashscope_api_key
+    # )
+    chain = Chat_QA_chain_simple(
         model=item.init_llm,
-        file_path=item.default_db_path,
-        persist_path=item.default_persist_path,
+        use_history=False,
         api_key=item.dashscope_api_key,
-        embedding=item.init_embedding_model,
-        template=DEFAULT_TEMPLATE,
-        embedding_key=item.dashscope_api_key
+        template=medical_templates.get(mode)
     )
     response = chain.answer(question=item.question)
     return {"response": response}

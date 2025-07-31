@@ -6,28 +6,13 @@ from langchain.prompts import PromptTemplate
 
 from Chat_with_Datawhale_langchain.qa_chain.get_vectordb import get_vectordb
 from Chat_with_Datawhale_langchain.qa_chain.model_to_llm import model_to_llm
+from Chat_with_Datawhale_langchain.utils.template import DEFAULT_TEMPLATE
 
 
 class QAChainSelf:
     """
     不带历史记录的问答链
     """
-
-    DEFAULT_TEMPLATE = """
-    你是一个专业问答助手，请根据以下提供的上下文简明准确地回答用户问题。
-
-    - 如果无法从上下文中找到答案，请直接说“我不知道”，不要编造内容。
-    - 语言简洁清晰，逻辑通顺。
-
-    上下文：
-    {context}
-
-    问题：
-    {question}
-
-    回答：
-    """
-
     def __init__(
         self,
         model: str,
@@ -48,7 +33,7 @@ class QAChainSelf:
         self.api_key = api_key
         self.embedding = embedding
         self.embedding_key = embedding_key
-        self.template = template or self.DEFAULT_TEMPLATE
+        self.template = template or DEFAULT_TEMPLATE
 
         # 初始化向量数据库和大模型
         self.vectordb = get_vectordb(self.file_path, self.persist_path, self.embedding, self.embedding_key)

@@ -11,7 +11,15 @@ def chat_with_bot(question):
     }
     response = requests.post(url, json=data)
     if response.status_code == 200:
-        answer = response.json().get("response", "")
+        resp_data = response.json().get("response", "")
+
+        print(resp_data)
+
+        if isinstance(resp_data, list):
+            answer = resp_data[0]
+        else:
+            answer = str(resp_data)
+
         chat_history.append(("User", question))
         chat_history.append(("Bot", answer))
         return answer
@@ -20,9 +28,10 @@ def chat_with_bot(question):
 
 
 questions = [
-    "你好，请问你是谁？",
+    "你好，你有什么技能？",
     "怎么提高抵抗力？",
-    "有什么简单的锻炼方法？"
+    "有什么简单的锻炼方法？",
+    # "这是一个什么故事？"
 ]
 
 for q in questions:
