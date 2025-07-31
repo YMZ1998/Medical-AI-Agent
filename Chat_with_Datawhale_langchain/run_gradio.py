@@ -3,6 +3,7 @@ import re
 import gradio as gr
 
 from Chat_with_Datawhale_langchain.app_config import app_config
+from Chat_with_Datawhale_langchain.utils.template import DEFAULT_TEMPLATE, medical_templates
 from database.create_db import create_db_info
 from utils.call_llm import get_completion
 from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
@@ -63,7 +64,7 @@ class ModelCenter:
                     top_k=top_k,
                     file_path=file_path,
                     persist_path=persist_path,
-                    embedding=embedding
+                    embedding=embedding,
                 )
             chain = self.qa_chain_self[key]
             chat_history.append((question, chain.answer(question, temperature, top_k)))
@@ -77,10 +78,12 @@ class ModelCenter:
 
 
 def format_chat_prompt(message, chat_history):
-    prompt = ""
+    context = ""
     for user_msg, bot_msg in chat_history:
-        prompt += f"\nUser: {user_msg}\nAssistant: {bot_msg}"
-    prompt += f"\nUser: {message}\nAssistant:"
+        context += f"\nUser: {user_msg}\nAssistant: {bot_msg}"
+    prompt = medical_templates.get("general")
+    prompt = prompt.replace("{question}", message).replace("{context}", context)
+    # print("prompt: ", prompt)
     return prompt
 
 

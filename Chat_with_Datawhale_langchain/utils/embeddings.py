@@ -27,7 +27,7 @@ def batched(inputs: List,
 class TongyiEmbeddings(Embeddings):
     def __init__(
         self,
-        model_name: str = "text_embedding_v4",
+        model_name: str = "text_embedding_v2",
         dashscope_api_key: Optional[str] = None,
         retry_count: int = 3,
     ):

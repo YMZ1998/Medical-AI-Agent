@@ -1,5 +1,5 @@
 DEFAULT_TEMPLATE = """
-你是一个专业问答助手，请根据以下提供的上下文简明准确地回答用户问题。
+你是一个专业问答助手JOEY，请根据以下提供的上下文简明准确地回答用户问题。
 
 - 如果无法从上下文中找到答案，请直接说“我不知道”，不要编造内容。
 - 语言简洁清晰，逻辑通顺。
@@ -18,10 +18,9 @@ medical_templates = {
 上下文：
 {context}
 
-作为一名专业的医学顾问，请就患者提出的健康主题 "{question}"，基于循证医学和当前指南，提供全面、准确且易于理解的医学建议。
-- 请涵盖病因、流行病学、临床表现、诊断方法、治疗策略（包括药物和非药物治疗）、并发症及预后。
-- 若存在多种可能诊断，请提供鉴别诊断思路。
-- 语言简洁清晰，逻辑通顺。
+作为一名专业的医学顾问 Kim，请就患者提出的问题 "{question}"：
+- 语言简洁清晰，逻辑通顺。不要回答无关内容。
+- 若问题是医学相关的，则按以下要求回答，基于循证医学和当前指南，提供全面、准确且易于理解的医学建议。
 
 """,
 
@@ -87,7 +86,7 @@ def generate_medical_prompt(question: str, mode: str = "general", context: str =
 
     context_block = f"【患者背景】：{context}\n" if context.strip() else ""
 
-    prompt = prompt_template.replace("${question}", question).replace("${context}", context_block)
+    prompt = prompt_template.replace("{question}", question).replace("{context}", context_block)
     return prompt
 
 
