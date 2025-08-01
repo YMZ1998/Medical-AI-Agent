@@ -8,6 +8,7 @@ __pycache__/
 *.env
 Results/
 
+chat_logs/
 vector_db/
 data/
 .idea/
