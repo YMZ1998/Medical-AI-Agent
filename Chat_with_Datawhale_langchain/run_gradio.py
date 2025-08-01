@@ -3,11 +3,11 @@ import re
 import gradio as gr
 
 from Chat_with_Datawhale_langchain.app_config import app_config
-from Chat_with_Datawhale_langchain.utils.template import DEFAULT_TEMPLATE, medical_templates
+from Chat_with_Datawhale_langchain.utils.template import medical_templates
 from database.create_db import create_db_info
-from utils.call_llm import get_completion
 from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
 from qa_chain.QA_chain_self import QAChainSelf
+from utils.call_llm import get_completion
 
 
 class ModelCenter:
@@ -23,7 +23,7 @@ class ModelCenter:
 
     def chat_qa_chain_self_answer(self, question: str, chat_history: list = [], model: str = "openai",
                                   embedding: str = "openai", temperature: float = 0.0, top_k: int = 4,
-                                  history_len: int = 3, file_path: str = app_config.default_db_path,
+                                  file_path: str = app_config.default_db_path,
                                   persist_path: str = app_config.default_persist_path):
         if not question:
             return "", chat_history
@@ -155,7 +155,7 @@ with block as demo:
             """)
         init_db.click(create_db_info, inputs=[file, embeddings], outputs=[msg])
         db_with_his_btn.click(model_center.chat_qa_chain_self_answer,
-                              inputs=[msg, chatbot, llm, embeddings, temperature, top_k, history_len],
+                              inputs=[msg, chatbot, llm, embeddings, temperature, top_k],
                               outputs=[msg, chatbot])
         db_wo_his_btn.click(model_center.qa_chain_self_answer,
                             inputs=[msg, chatbot, llm, embeddings, temperature, top_k], outputs=[msg, chatbot])

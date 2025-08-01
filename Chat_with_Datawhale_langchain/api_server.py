@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from Chat_with_Datawhale_langchain.app_config import app_config
 from Chat_with_Datawhale_langchain.qa_chain.chat_qa_chain_simple import Chat_QA_chain_simple
 from Chat_with_Datawhale_langchain.utils.template import medical_templates
-from qa_chain.QA_chain_self import QAChainSelf
 
 
 class QARequest(BaseModel):

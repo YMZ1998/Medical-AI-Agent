@@ -27,8 +27,9 @@ class Chat_QA_chain_simple:
         """将模板填充为最终提示词"""
         builder = MedicalPromptBuilder(medical_templates, mode="general")
         if self.use_history:
-            for q, a in self.chat_history:
-                builder.add_history(q, a)
+            builder.set_chat_history(self.chat_history)
+            # for q, a in self.chat_history:
+            #     builder.add_history(q, a)
 
         context_prompt = builder.build_prompt(question)
         # print("context_prompt: ", context_prompt)
