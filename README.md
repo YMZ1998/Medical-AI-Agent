@@ -12,6 +12,8 @@ This code is based on:
 
 [Chat_with_Datawhale_langchain](https://github.com/logan-zou/Chat_with_Datawhale_langchain)
 
+[MedicalGPT](https://github.com/shibing624/MedicalGPT)
+
 ## Tools
 
 [langchain](https://github.com/langchain-ai/langchain)
