@@ -37,5 +37,10 @@ pip install langchain-openai -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install langchain-community -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install python-dotenv -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install dashscope --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install gradio==3.41.2
+pip install gradio==3.41.2 -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+```
+conda env export --no-builds --ignore-channels > env.yml
+conda env create -f env.yml
 ```
