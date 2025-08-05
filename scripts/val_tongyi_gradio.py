@@ -2,10 +2,9 @@ import torch
 import gradio as gr
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-# ✅ 模型路径（Chat 模型）
-model_name = "Qwen/Qwen2.5-7B-Instruct"
+# model_name = "Qwen/Qwen2.5-7B-Instruct"
+model_name = r"C:\Users\Admin\.cache\huggingface\hub\models--Qwen--Qwen2.5-7B-Instruct\snapshots\a09a35458c702b33eeacc393d103063234e8bc28"
 
-# ✅ 加载模型和 tokenizer
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
@@ -15,7 +14,6 @@ model = AutoModelForCausalLM.from_pretrained(
 ).eval()
 
 
-# ✅ 聊天函数
 def chat(user_input, history):
     # 构造聊天上下文
     messages = [{"role": "system", "content": "You are Qwen, a helpful assistant."}]
@@ -53,11 +51,10 @@ def chat(user_input, history):
     return history, history, ""
 
 
-# ✅ 构建 Gradio 界面
 with gr.Blocks() as demo:
-    gr.Markdown("# 🤖 Qwen Chatbot (Transformers + Gradio)")
+    gr.Markdown("# 🤖 Qwen Chatbot")
 
-    chatbot = gr.Chatbot(label="Qwen Chatbot").style(height=500)
+    chatbot = gr.Chatbot(label="Qwen Chatbot").style(height=800)
     user_input = gr.Textbox(label="Your message", placeholder="Type your question here...", lines=1)
     state = gr.State([])
 
@@ -65,5 +62,6 @@ with gr.Blocks() as demo:
     send_btn.click(fn=chat, inputs=[user_input, state], outputs=[chatbot, state, user_input])
     user_input.submit(fn=chat, inputs=[user_input, state], outputs=[chatbot, state, user_input])
 
-# ✅ 启动
+# http://localhost:7860/
+# demo.launch(server_name='0.0.0.0', server_port=7860)
 demo.launch(server_port=7860)

@@ -26,6 +26,10 @@ This code is based on:
 
 [bailian aliyun](https://bailian.console.aliyun.com/)
 
+[huggingface](https://huggingface.co/)
+
+[docker](https://www.docker.com/products/docker-desktop/)
+
 ## Environment
 
 
