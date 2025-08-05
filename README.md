@@ -45,4 +45,11 @@ pip install gradio==3.41.2 -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 conda env export --no-builds --ignore-channels > env.yml
 conda env create -f env.yml
+
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install -U textgen
+pip install transformers==4.31.0 accelerate==0.21.0 bitsandbytes==0.46.1 peft==0.4.0
+pip install huggingface_hub[hf_xet]
+pip install -U transformers accelerate peft
+pip install vllm
 ```

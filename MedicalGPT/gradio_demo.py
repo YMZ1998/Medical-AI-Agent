@@ -27,9 +27,9 @@ from template import get_conv_template
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--base_model', default=None, type=str, required=True)
+    parser.add_argument('--base_model', default="shibing624/ziya-llama-13b-medical-lora", type=str, required=False)
     parser.add_argument('--lora_model', default="", type=str, help="If None, perform inference on the base model")
-    parser.add_argument('--tokenizer_path', default=None, type=str)
+    parser.add_argument('--tokenizer_path', default="shibing624/vicuna-baichuan-13b-chat", type=str)
     parser.add_argument('--template_name', default="vicuna", type=str,
                         help="Prompt template name, eg: alpaca, vicuna, baichuan2, chatglm2 etc.")
     parser.add_argument('--system_prompt', default="", type=str)
