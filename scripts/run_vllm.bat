@@ -5,6 +5,8 @@ setlocal enabledelayedexpansion
 :: ===== 配置项（建议路径无空格、无中文） =====
 set "MODEL_DIR=D:\huggingface_cache\models--Qwen--Qwen2.5-7B-Instruct\snapshots\a09a35458c702b33eeacc393d103063234e8bc28"
 set "PORT=8000"
+set "CONTAINER_NAME=vllm_doctor"
+set "GPU_COUNT=all"
 
 echo.
 echo 正在检查模型路径: %MODEL_DIR%
@@ -20,18 +22,40 @@ if not exist "%MODEL_DIR%\config.json" (
     exit /b 1
 )
 
-echo 模型路径检查通过，继续启动容器...
+:: 检查是否已有容器运行
 echo.
+echo 检查是否已有名为 %CONTAINER_NAME% 的容器在运行...
+set CONTAINER_ID=
+for /f %%i in ('docker ps -a -q -f "name=%CONTAINER_NAME%"') do set CONTAINER_ID=%%i
+
+if defined CONTAINER_ID (
+    echo 停止并删除旧容器 %CONTAINER_NAME% ...
+    docker stop %CONTAINER_NAME%
+    docker rm %CONTAINER_NAME%
+) else (
+    echo 没有名为 %CONTAINER_NAME% 的旧容器。
+)
+
 
 echo.
-echo 正在启动 vLLM 容器...
+echo 启动 vLLM 容器（后台运行）...
 echo 模型路径: %MODEL_DIR%
-echo 使用镜像: vllm/vllm-openai:latest
-echo 启动后访问: http://localhost:%PORT%
+echo 容器名: %CONTAINER_NAME%
+echo 端口映射: %PORT% -> 8000
+echo 镜像: vllm/vllm-openai:latest
+echo 访问地址: http://localhost:%PORT%
 echo.
 
-docker run --gpus all -it --rm -v "%MODEL_DIR%":/model -p %PORT%:8000 --entrypoint python3 vllm/vllm-openai:latest -m vllm.entrypoints.openai.api_server --model /model --served-model-name doctor --host 0.0.0.0 --port 8000 --gpu-memory-utilization 0.8 --max-model-len 2048
+docker run -d --gpus %GPU_COUNT% --name %CONTAINER_NAME% -v "%MODEL_DIR%":/model -p %PORT%:8000 --entrypoint python3 vllm/vllm-openai:latest -m vllm.entrypoints.openai.api_server --model /model --served-model-name doctor --host 0.0.0.0 --port 8000 --gpu-memory-utilization 0.8 --max-model-len 2048
 
-echo.
-echo 如果容器退出，服务也会停止。
+if %errorlevel% neq 0 (
+    echo 容器启动失败！
+    pause
+    exit /b 1
+) else (
+	echo Container started successfully, running in background.
+	echo View logs: docker logs -f %CONTAINER_NAME%
+	echo Stop container: docker stop %CONTAINER_NAME%
+)
+
 pause
