@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+8000
 *.txt
 *.csv
 *.env

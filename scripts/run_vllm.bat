@@ -46,7 +46,21 @@ echo 镜像: vllm/vllm-openai:latest
 echo 访问地址: http://localhost:%PORT%
 echo.
 
-docker run -d --gpus %GPU_COUNT% --name %CONTAINER_NAME% -v "%MODEL_DIR%":/model -p %PORT%:8000 --entrypoint python3 vllm/vllm-openai:latest -m vllm.entrypoints.openai.api_server --model /model --served-model-name doctor --host 0.0.0.0 --port 8000 --gpu-memory-utilization 0.8 --max-model-len 2048
+docker run -d --gpus all --name %CONTAINER_NAME% ^
+  -v "%MODEL_DIR%":/model ^
+  -p %PORT%:8000 ^
+  --shm-size=1g --ulimit memlock=-1:-1 ^
+  --entrypoint python3 vllm/vllm-openai:latest ^
+  -m vllm.entrypoints.openai.api_server ^
+  --model /model ^
+  --served-model-name doctor ^
+  --host 0.0.0.0 ^
+  --port 8000 ^
+  --gpu-memory-utilization 0.8 ^
+  --tensor-parallel-size 1 ^
+  --max-model-len 2048 ^
+  --max-num-seqs 32 ^
+  --swap-space 20
 
 if %errorlevel% neq 0 (
     echo 容器启动失败！
