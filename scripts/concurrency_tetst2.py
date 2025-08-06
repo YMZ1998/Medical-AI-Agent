@@ -35,7 +35,7 @@ async def fetch(session, idx):
 async def main():
     start_time = time.time()
     async with aiohttp.ClientSession() as session:
-        tasks = [fetch(session, i) for i in range(20)]
+        tasks = [fetch(session, i) for i in range(32)]
         await asyncio.gather(*tasks)
     end_time = time.time()
     print(f"总耗时: {end_time - start_time:.2f} 秒")
