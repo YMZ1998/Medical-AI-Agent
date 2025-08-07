@@ -3,7 +3,7 @@ import torch
 
 def main():
     # model_path = r"C:\Users\Admin\.cache\huggingface\hub\models--deepseek-ai--deepseek-math-7b-base\snapshots\036a8c6189aac6e2fc4e07b46e1e57c6b647bca5"  # 替换为你本地路径
-    model_path = "Intelligent-Internet/II-Medical-8B-1706"
+    model_path = r"D:\huggingface_cache\II-Medical-8B-1706"
 
     tokenizer = AutoTokenizer.from_pretrained(model_path,use_fast=False)
 

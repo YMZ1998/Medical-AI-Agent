@@ -1,3 +1,4 @@
+import re
 import gradio as gr
 import requests
 import time
@@ -5,6 +6,10 @@ from scripts.medical_templates import medical_templates
 
 url = "http://192.168.0.90:8000/v1/chat/completions"
 headers = {"Content-Type": "application/json"}
+
+
+def remove_think_tags(text):
+    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
 
 
 def build_prompt(template_type, user_context, question, chat_history):
@@ -31,8 +36,8 @@ def medical_chat_fn(user_input, chat_history, template_type, context, messages_s
 
     data = {
         "model": "doctor",
-        "messages": messages[-2:],  # 当前系统提示 + 用户提问
-        "max_tokens": 512,
+        "messages": messages[-1:],  # 当前系统提示 + 用户提问
+        "max_tokens": 1024,
         "temperature": 0.7,
     }
 
@@ -42,6 +47,7 @@ def medical_chat_fn(user_input, chat_history, template_type, context, messages_s
 
     result = response.json()
     assistant_msg = result["choices"][0]["message"]["content"]
+    assistant_msg = remove_think_tags(assistant_msg)  # 过滤think标签内容
     print("Assistant:", assistant_msg)
     messages.append({"role": "assistant", "content": assistant_msg})
 
