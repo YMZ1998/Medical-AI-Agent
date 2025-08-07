@@ -27,7 +27,7 @@ def medical_chat_fn(user_input, chat_history, template_type, context):
     messages.append({"role": "user", "content": user_input})
 
     data = {
-        "model": "doctor",
+        "model": "Qwen",
         "messages": messages[-2:],  # 当前系统提示 + 本轮提问
         "max_tokens": 512,
         "temperature": 0.7,

@@ -14,7 +14,7 @@ def chat_with_model(user_input):
     messages.append({"role": "user", "content": user_input})
     chat = messages[-2:]
     data = {
-        "model": "doctor",
+        "model": "Qwen",
         "messages": chat,
         "max_tokens": 512,
         "temperature": 0.7,

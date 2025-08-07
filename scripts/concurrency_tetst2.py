@@ -6,7 +6,7 @@ API_URL = "http://localhost:8000/v1/chat/completions"
 HEADERS = {"Content-Type": "application/json"}
 
 payload = {
-    "model": "doctor",
+    "model": "Qwen",
     "messages": [{"role": "user", "content": "你好，请问感冒怎么办？"}],
     "temperature": 0.7
 }

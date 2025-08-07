@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 :: ===== 配置项（建议路径无空格、无中文） =====
 set "MODEL_DIR=D:\huggingface_cache\models--Qwen--Qwen2.5-7B-Instruct\snapshots\a09a35458c702b33eeacc393d103063234e8bc28"
 set "PORT=8000"
-set "CONTAINER_NAME=vllm_doctor"
+set "CONTAINER_NAME=dipper.agent"
 set "GPU_COUNT=all"
 
 echo.
@@ -53,12 +53,12 @@ docker run -d --gpus all --name %CONTAINER_NAME% ^
   --entrypoint python3 vllm/vllm-openai:latest ^
   -m vllm.entrypoints.openai.api_server ^
   --model /model ^
-  --served-model-name doctor ^
+  --served-model-name Qwen ^
   --host 0.0.0.0 ^
   --port 8000 ^
   --gpu-memory-utilization 0.8 ^
   --tensor-parallel-size 1 ^
-  --max-model-len 2048 ^
+  --max-model-len 4096 ^
   --max-num-seqs 32 ^
   --swap-space 20
 

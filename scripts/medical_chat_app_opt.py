@@ -25,13 +25,12 @@ def medical_chat_fn(user_input, chat_history, template_type, context, messages_s
 
     system_prompt = build_prompt(template_type, context, user_input, chat_history)
 
-    messages = []  # 清空历史（可改成保留历史）
     messages.append({"role": "system", "content": system_prompt})
     messages.append({"role": "user", "content": user_input})
 
     data = {
-        "model": "doctor",
-        "messages": messages[-2:],  # 当前系统提示 + 用户提问
+        "model": "Qwen",
+        "messages": messages[-2:],
         "max_tokens": 512,
         "temperature": 0.7,
     }
@@ -42,7 +41,7 @@ def medical_chat_fn(user_input, chat_history, template_type, context, messages_s
 
     result = response.json()
     assistant_msg = result["choices"][0]["message"]["content"]
-    print("Assistant:", assistant_msg)
+    # print("Assistant:", assistant_msg)
     messages.append({"role": "assistant", "content": assistant_msg})
 
     chat_history.append((user_input, assistant_msg))

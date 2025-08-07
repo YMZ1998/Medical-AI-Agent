@@ -8,7 +8,7 @@ headers = {"Content-Type": "application/json"}
 
 def send_request(index):
     data = {
-        "model": "doctor",
+        "model": "Qwen",
         "messages": [
             {"role": "system", "content": "你是医学助手"},
             {"role": "user", "content": f"这是第{index}个问题：高血压的诊断标准？"}

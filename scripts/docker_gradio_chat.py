@@ -18,7 +18,7 @@ def chat_fn(user_input, chat_history):
     chat = messages[-2:]
 
     data = {
-        "model": "doctor",
+        "model": "Qwen",
         "messages": chat,
         "max_tokens": 512,
         "temperature": 0.7,
