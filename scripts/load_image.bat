@@ -1,11 +1,11 @@
 @echo off
 chcp 65001 >nul
 
-set IMAGE_FILE=D:\docker_export\ubuntu_20250811_172138.tar
+set IMAGE_FILE=D:\docker_export\vllm-vllm-openai_v1.0.tar
 set NEW_IMAGE_NAME=datu
 set NEW_IMAGE_TAG=v1.0
 set NEW_IMAGE=%NEW_IMAGE_NAME%:%NEW_IMAGE_TAG%
-set ORIGINAL_IMAGE=ubuntu:latest
+set ORIGINAL_IMAGE=vllm/vllm-openai:latest
 
 REM 先检查新镜像是否存在
 docker image inspect %NEW_IMAGE% >nul 2>&1
@@ -23,11 +23,11 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-echo 给镜像重新命名为 %NEW_IMAGE%
+echo 给镜像重新命名为 docker tag %ORIGINAL_IMAGE% %NEW_IMAGE%
 docker tag %ORIGINAL_IMAGE% %NEW_IMAGE%
 
-echo 删除旧镜像标签 %ORIGINAL_IMAGE%
-docker rmi %ORIGINAL_IMAGE%
+echo 删除旧镜像标签 docker rmi %ORIGINAL_IMAGE%
+REM docker rmi %ORIGINAL_IMAGE%
 
 docker image ls
 

@@ -7,6 +7,7 @@ set "MODEL_DIR=D:\huggingface_cache\models--Qwen--Qwen2.5-7B-Instruct\snapshots\
 set "PORT=8000"
 set "CONTAINER_NAME=dipper.agent"
 set "GPU_COUNT=all"
+set IMAGE=datu:v1.0
 
 echo.
 echo 正在检查模型路径: %MODEL_DIR%
@@ -42,7 +43,7 @@ echo 启动 vLLM 容器（后台运行）...
 echo 模型路径: %MODEL_DIR%
 echo 容器名: %CONTAINER_NAME%
 echo 端口映射: %PORT% -> 8000
-echo 镜像: vllm/vllm-openai:latest
+echo 镜像: %IMAGE%
 echo 访问地址: http://localhost:%PORT%
 echo.
 
@@ -50,7 +51,7 @@ docker run -d --gpus all --name %CONTAINER_NAME% ^
   -v "%MODEL_DIR%":/model ^
   -p %PORT%:8000 ^
   --shm-size=1g --ulimit memlock=-1:-1 ^
-  --entrypoint python3 vllm/vllm-openai:latest ^
+  --entrypoint python3 %IMAGE% ^
   -m vllm.entrypoints.openai.api_server ^
   --model /model ^
   --served-model-name Qwen ^
