@@ -8,7 +8,8 @@ import sys
 from scripts.md_to_text import md_to_text
 from scripts.medical_templates import medical_templates
 
-MODEL_URL = "http://192.168.0.90:8000/v1/chat/completions"
+# MODEL_URL = "http://192.168.0.90:8000/v1/chat/completions"
+MODEL_URL = "http://localhost:8000/v1/chat/completions"
 HEADERS = {"Content-Type": "application/json"}
 
 app = FastAPI(title="Medical Chat API with Session History Limit")
@@ -70,7 +71,7 @@ class ResetResponse(BaseModel):
 
 @app.post("/chat", response_model=ChatResponse)
 def medical_chat(req: ChatRequest, request: Request):
-    logger.info(f"Received /chat request from session_id={req.session_id} question={req.question[:30]!r}...")
+    logger.info(f"Received chat request from session_id={req.session_id} question={req.question[:30]!r}...")
     if not req.question.strip():
         logger.warning("Empty question received, returning empty response.")
         return {"answer": "", "elapsed_seconds": 0, "chat_history": []}
@@ -91,7 +92,7 @@ def medical_chat(req: ChatRequest, request: Request):
             json={
                 "model": "Qwen",
                 "messages": messages_state,
-                "max_tokens": 512,
+                "max_tokens": 1024,
                 "temperature": 0.7,
             },
             headers=HEADERS,
@@ -130,4 +131,4 @@ if __name__ == "__main__":
     import uvicorn
 
     logger.info("Starting Medical Chat API server...")
-    uvicorn.run(app, host="0.0.0.0", port=9000)
+    uvicorn.run(app, host="localhost", port=9000)
