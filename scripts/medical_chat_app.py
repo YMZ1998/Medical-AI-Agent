@@ -81,4 +81,4 @@ with gr.Blocks() as demo:
     clear.click(fn=clear_chat, outputs=[chatbot, msg])
 
 # 🚀 启动服务
-demo.launch( server_port=7860, share=False)
+demo.launch(server_port=7860, share=False)
