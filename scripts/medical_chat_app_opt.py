@@ -61,7 +61,7 @@ with gr.Blocks() as demo:
     with gr.Row():
         template_selector = gr.Dropdown(
             label="🧩 选择提示词模板",
-            choices=["default", "general", "diagnosis", "drug"],
+            choices=["default", "case_summary", "general", "diagnosis", "drug"],
             value="default",
         )
         context_box = gr.Textbox(
@@ -106,4 +106,4 @@ with gr.Blocks() as demo:
 
     clear.click(fn=clear_chat, outputs=[chatbot, msg, time_display, messages_state])
 
-demo.launch(server_name="0.0.0.0", server_port=7860, share=False)
+demo.launch(server_name="127.0.0.1", server_port=7862, share=False)
