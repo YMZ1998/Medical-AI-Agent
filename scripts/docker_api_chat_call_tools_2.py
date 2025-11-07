@@ -1,3 +1,5 @@
+from inspect import signature
+
 import requests
 import time
 import json
@@ -11,7 +13,7 @@ url = "http://localhost:8000/v1/chat/completions"
 headers = {"Content-Type": "application/json"}
 
 messages = [{"role": "system", "content": (
-    "你是一个可以帮助用户聊天的智能助手。不要做任何假设。"
+    "你是一个可以帮助用户聊天的智能助手。不要做任何假设性回答。"
     "当用户指令涉及文件操作时，你可以调用工具函数，但只有必要时才调用。"
 )}]
 
@@ -101,6 +103,7 @@ def detect_intent(user_input):
     except Exception:
         return "chat"
 
+
 def generate_tool_descriptions(tools: dict):
     descriptions = []
     for name, func in tools.items():
@@ -123,6 +126,9 @@ def generate_tool_descriptions(tools: dict):
 
 
 TOOL_DESCRIPTIONS = generate_tool_descriptions(TOOLS)
+print("工具描述：", TOOL_DESCRIPTIONS)
+
+
 # ---------------- 主聊天函数（改造版） ----------------
 def chat_with_model(user_input):
     print("--------------------------------------------------------------------------------")
@@ -144,17 +150,16 @@ def chat_with_model(user_input):
     else:
         # 普通聊天模式
         prompt = (
-            f"请简要地回答用户问题。\n"
-            f"用户: {user_input}\n"
+            f"请简要地回答用户问题: {user_input}\n"
         )
 
     messages.append({"role": "user", "content": prompt})
-    chat = messages[-2:]  # 最近上下文
+    chat = messages[-5:]  # 最近上下文
 
     data = {
         "model": "Qwen",
         "messages": chat,
-        "max_tokens": 512,
+        "max_tokens": 2048,
         "temperature": 0.7,
     }
 
