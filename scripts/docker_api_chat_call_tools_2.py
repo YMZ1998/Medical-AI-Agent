@@ -101,7 +101,28 @@ def detect_intent(user_input):
     except Exception:
         return "chat"
 
+def generate_tool_descriptions(tools: dict):
+    descriptions = []
+    for name, func in tools.items():
+        doc = func.__doc__ or "无描述"
+        try:
+            sig = signature(func)
+            params = ", ".join([p.name for p in sig.parameters.values()])
+            example_args = ", ".join([f'{p.name}="..."' for p in sig.parameters.values()])
+            example = f"{name}({example_args})"
+        except Exception:
+            params = "未知参数"
+            example = name
+        descriptions.append(
+            f"工具名称: {name}\n"
+            f"描述: {doc}\n"
+            f"参数: {params}\n"
+            f"示例: {example}\n"
+        )
+    return "\n".join(descriptions)
 
+
+TOOL_DESCRIPTIONS = generate_tool_descriptions(TOOLS)
 # ---------------- 主聊天函数（改造版） ----------------
 def chat_with_model(user_input):
     print("--------------------------------------------------------------------------------")
@@ -113,10 +134,9 @@ def chat_with_model(user_input):
 
     if is_file_op:
         # 调用工具模式
-        tool_descriptions = "\n".join([f"{k}: {TOOLS[k].__doc__}" for k in TOOLS])
         prompt = (
             f"以下是可用工具函数，用户可能会用到它们：\n"
-            f"{tool_descriptions}\n"
+            f"{TOOL_DESCRIPTIONS}\n"
             f"用户指令: {user_input}\n"
             f"请严格输出 JSON 格式：{{\"function\": \"...\", \"args\": {{...}}}}，"
             f"键和值必须用双引号,源文件路径为 src_path，目标文件路径为 dst_path。"
