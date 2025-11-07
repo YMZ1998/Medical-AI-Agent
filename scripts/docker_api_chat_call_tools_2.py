@@ -37,22 +37,6 @@ TOOLS = {
     "move_file": move_file,
 }
 
-# 参数映射（LLM输出的参数名 → 实际函数参数名）
-PARAM_MAPPING = {
-    "compress_file": {"src_path": "src_path", "dst_path": "dst_path", "source": "src_path", "source_path": "src_path",
-                      "destination_path": "dst_path",
-                      "dest": "dst_path"},
-    "move_file": {"src_path": "src_path", "dst_path": "dst_path", "source": "src_path", "source_path": "src_path",
-                  "dest": "dst_path", "destination_path": "dst_path"},
-}
-
-
-def map_args(func_name, args):
-    if func_name in PARAM_MAPPING:
-        mapping = PARAM_MAPPING[func_name]
-        return {mapping.get(k, k): v for k, v in args.items()}
-    return args
-
 
 # ---------------- 清理 LLM 输出 ----------------
 def clean_llm_json(output_text):
@@ -68,7 +52,6 @@ def parse_llm_output(output_text):
         func_name = cmd.get("function")
         args = cmd.get("args", {})
         if func_name in TOOLS:
-            args = map_args(func_name, args)
             return func_name, args
     except Exception:
         pass

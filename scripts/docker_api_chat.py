@@ -1,8 +1,7 @@
 import requests
 import time
 
-# url = "http://localhost:8000/v1/chat/completions"
-url = "http://192.168.0.90:8000/v1/chat/completions"
+url = "http://localhost:8000/v1/chat/completions"
 headers = {"Content-Type": "application/json"}
 
 messages = [
