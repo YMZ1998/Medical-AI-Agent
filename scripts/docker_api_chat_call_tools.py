@@ -13,8 +13,6 @@ headers = {"Content-Type": "application/json"}
 messages = [{"role": "system", "content": (
     "你是一个可以帮助用户聊天的智能助手。"
     "当用户指令涉及文件操作时，你可以调用工具函数，但只有必要时才调用。"
-    "如果调用工具函数，请严格输出 JSON 格式：{'function': '...', 'args': {...}}。"
-    "否则直接输出自然语言回答，不要输出 JSON。"
 )}]
 
 
@@ -65,7 +63,6 @@ def parse_llm_output(output_text):
     output_text = clean_llm_json(output_text)
     try:
         cmd = json.loads(output_text)
-        print("cmd:", cmd)
         func_name = cmd.get("function")
         args = cmd.get("args", {})
         if func_name in TOOLS:
@@ -78,6 +75,7 @@ def parse_llm_output(output_text):
 
 # ---------------- 主聊天函数 ----------------
 def chat_with_model(user_input):
+    print("--------------------------------------------------------------------------------")
     print("User:", user_input)
     # 给 LLM 提示可调用工具
     tool_descriptions = "\n".join([f"{k}: {TOOLS[k].__doc__}" for k in TOOLS])
@@ -85,9 +83,11 @@ def chat_with_model(user_input):
         f"以下是可用工具函数，用户可能会用到它们：\n"
         f"{tool_descriptions}\n"
         f"用户指令: {user_input}\n"
-        f"如果需要调用工具函数，请严格输出 JSON 格式：{{'function': '...', 'args': {...}}}，不要使用单引号，键和值必须用双引号"
-        f"源文件路径为 src_path，目标文件路径为 dst_path。否则只回答用户指令。"
+        f"如果需要调用工具函数，请严格输出 JSON 格式：{{'function': '...', 'args': {...}}}，"
+        f"不要使用单引号，键和值必须用双引号,源文件路径为 src_path，目标文件路径为 dst_path。"
+        f"否则只回答用户指令。"
     )
+    # print("Prompt:", prompt)
 
     messages.append({"role": "user", "content": prompt})
     chat = messages[-2:]  # 最近上下文
@@ -108,17 +108,18 @@ def chat_with_model(user_input):
 
     # 尝试解析函数调用
     func_name, args = parse_llm_output(assistant_msg)
-    print(f"[调用工具函数: {func_name}], {args}")
     if func_name:
+        print(f"[调用工具函数: {func_name}], {args}")
         try:
             func_result = TOOLS[func_name](**args)
-            assistant_msg += f"\n\n[工具执行结果]: {func_result}"
+            assistant_msg += f"\n[工具执行结果]: {func_result}"
         except Exception as e:
-            assistant_msg += f"\n\n[工具执行失败]: {str(e)}"
+            assistant_msg += f"\n[工具执行失败]: {str(e)}"
 
     messages.append({"role": "assistant", "content": assistant_msg})
     print(f"[耗时 {elapsed:.2f} 秒]")
     print("Assistant:", assistant_msg)
+    print("--------------------------------------------------------------------------------")
 
 
 # ---------------- CLI ----------------
@@ -126,10 +127,12 @@ if __name__ == "__main__":
     print("开始对话（输入 exit 退出）")
 
     # 测试单条指令
-    test_inputs = ["你是谁,你会什么",
+    test_inputs = ["你是谁，你会什么？",
                    "请把 D:\\debug\\output.txt 移动到 D:\\output.txt",
                    "请把 D:\\output.txt 压缩成 D:\\output.zip",
-                   "请把 D:\\output.txt 移动到 D:\\debug\\output.txt"]
+                   "请把 D:\\output.txt 移动到 D:\\debug\\output.txt",
+                   "你刚刚做了什么？"
+                   ]
     for test_input in test_inputs:
         chat_with_model(test_input)
 
