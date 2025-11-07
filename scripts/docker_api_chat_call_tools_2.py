@@ -5,57 +5,45 @@ import zipfile
 import shutil
 import os
 import re
-from inspect import signature
 
 # -------------------- 配置 LLM --------------------
-VLLM_URL = "http://localhost:8000/v1/chat/completions"
-HEADERS = {"Content-Type": "application/json"}
+url = "http://localhost:8000/v1/chat/completions"
+headers = {"Content-Type": "application/json"}
 
-# 各类 LLM 对应的消息缓存
-MEMORY = {
-    "chat": [],
-    "file_ops": [],
-    "tech": []
-}
+messages = [{"role": "system", "content": (
+    "你是一个可以帮助用户聊天的智能助手。不要做任何假设。"
+    "当用户指令涉及文件操作时，你可以调用工具函数，但只有必要时才调用。"
+)}]
 
-# ---------------- 工具函数 ----------------
+
+# ---------------- 工具函数注册 ----------------
 def compress_file(src_path, dst_path):
-    """压缩文件或目录为 zip"""
-    try:
-        os.makedirs(os.path.dirname(dst_path), exist_ok=True)
-        with zipfile.ZipFile(dst_path, "w", zipfile.ZIP_DEFLATED) as zf:
-            if os.path.isdir(src_path):
-                for root, dirs, files in os.walk(src_path):
-                    for file in files:
-                        file_path = os.path.join(root, file)
-                        zf.write(file_path, os.path.relpath(file_path, start=src_path))
-            else:
-                zf.write(src_path, os.path.basename(src_path))
-        return f"✅ 压缩完成: {src_path} -> {dst_path}"
-    except Exception as e:
-        return f"❌ 压缩失败: {e}"
+    """压缩文件为 zip"""
+    with zipfile.ZipFile(dst_path, "w") as zipf:
+        zipf.write(src_path, os.path.basename(src_path))
+    return f"Compressed {src_path} -> {dst_path}"
+
 
 def move_file(src_path, dst_path):
-    """移动文件或文件夹"""
-    try:
-        os.makedirs(os.path.dirname(dst_path), exist_ok=True)
-        shutil.move(src_path, dst_path)
-        return f"✅ 移动完成: {src_path} -> {dst_path}"
-    except Exception as e:
-        return f"❌ 移动失败: {e}"
+    """移动文件"""
+    shutil.move(src_path, dst_path)
+    return f"Moved {src_path} -> {dst_path}"
+
 
 TOOLS = {
     "compress_file": compress_file,
-    "move_file": move_file
+    "move_file": move_file,
 }
 
-# 参数映射
+# 参数映射（LLM输出的参数名 → 实际函数参数名）
 PARAM_MAPPING = {
-    "compress_file": {"src_path": "src_path", "dst_path": "dst_path", "source": "src_path",
-                      "source_path": "src_path", "destination_path": "dst_path", "dest": "dst_path"},
-    "move_file": {"src_path": "src_path", "dst_path": "dst_path", "source": "src_path",
-                  "source_path": "src_path", "dest": "dst_path", "destination_path": "dst_path"}
+    "compress_file": {"src_path": "src_path", "dst_path": "dst_path", "source": "src_path", "source_path": "src_path",
+                      "destination_path": "dst_path",
+                      "dest": "dst_path"},
+    "move_file": {"src_path": "src_path", "dst_path": "dst_path", "source": "src_path", "source_path": "src_path",
+                  "dest": "dst_path", "destination_path": "dst_path"},
 }
+
 
 def map_args(func_name, args):
     if func_name in PARAM_MAPPING:
@@ -63,33 +51,14 @@ def map_args(func_name, args):
         return {mapping.get(k, k): v for k, v in args.items()}
     return args
 
-# ---------------- 生成详细工具描述 ----------------
-def generate_tool_descriptions(tools: dict):
-    descriptions = []
-    for name, func in tools.items():
-        doc = func.__doc__ or "无描述"
-        try:
-            sig = signature(func)
-            params = ", ".join([p.name for p in sig.parameters.values()])
-            example_args = ", ".join([f'{p.name}="..."' for p in sig.parameters.values()])
-            example = f"{name}({example_args})"
-        except Exception:
-            params = "未知参数"
-            example = name
-        descriptions.append(
-            f"工具名称: {name}\n"
-            f"描述: {doc}\n"
-            f"参数: {params}\n"
-            f"示例: {example}\n"
-        )
-    return "\n".join(descriptions)
 
-TOOL_DESCRIPTIONS = generate_tool_descriptions(TOOLS)
-
-# ---------------- LLM 输出解析 ----------------
+# ---------------- 清理 LLM 输出 ----------------
 def clean_llm_json(output_text):
-    return re.sub(r"```(?:json)?\n?|```", "", output_text).strip()
+    cleaned = re.sub(r"```(?:json)?\n?|```", "", output_text).strip()
+    return cleaned
 
+
+# ---------------- 解析 LLM 输出 ----------------
 def parse_llm_output(output_text):
     output_text = clean_llm_json(output_text)
     try:
@@ -103,23 +72,64 @@ def parse_llm_output(output_text):
         pass
     return None, None
 
-# ---------------- 聊天/工具调用 ----------------
-def chat_with_model(user_input, llm_type="chat"):
+
+def detect_intent(user_input):
+    """
+    使用 LLM 判断用户意图
+    返回: "file_op" 或 "chat"
+    """
+    prompt = (
+        f"判断下面用户指令的意图，是文件操作(file_op)还是普通聊天(chat)。"
+        f"严格返回 JSON 格式: {{\"intent\": \"file_op\"}} 或 {{\"intent\": \"chat\"}}\n"
+        f"用户指令: {user_input}"
+    )
+    data = {
+        "model": "Qwen",
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 20,
+        "temperature": 0
+    }
+    response = requests.post(url, json=data, headers=headers)
+    response.raise_for_status()
+    result = response.json()
+    output_text = result["choices"][0]["message"]["content"]
+    # 清理 JSON
+    output_text = re.sub(r"```(?:json)?\n?|```", "", output_text).strip()
+    try:
+        intent_json = json.loads(output_text)
+        return intent_json.get("intent", "chat")
+    except Exception:
+        return "chat"
+
+
+# ---------------- 主聊天函数（改造版） ----------------
+def chat_with_model(user_input):
     print("--------------------------------------------------------------------------------")
     print("User:", user_input)
 
-    memory = MEMORY[llm_type]
+    # 判断是否属于文件操作（意图识别）
+    intent = detect_intent(user_input)
+    is_file_op = intent == "file_op"
 
-    # 构造 prompt
-    prompt = (
-        f"以下是可用工具函数及详细信息：\n{TOOL_DESCRIPTIONS}\n"
-        f"用户指令: {user_input}\n"
-        f"如果需要调用工具函数，请严格输出 JSON 格式：{{\"function\": \"...\", \"args\": {{...}}}}, "
-        f"键和值必须用双引号，否则只回答用户指令。"
-    )
+    if is_file_op:
+        # 调用工具模式
+        tool_descriptions = "\n".join([f"{k}: {TOOLS[k].__doc__}" for k in TOOLS])
+        prompt = (
+            f"以下是可用工具函数，用户可能会用到它们：\n"
+            f"{tool_descriptions}\n"
+            f"用户指令: {user_input}\n"
+            f"请严格输出 JSON 格式：{{\"function\": \"...\", \"args\": {{...}}}}，"
+            f"键和值必须用双引号,源文件路径为 src_path，目标文件路径为 dst_path。"
+        )
+    else:
+        # 普通聊天模式
+        prompt = (
+            f"请简要地回答用户问题。\n"
+            f"用户: {user_input}\n"
+        )
 
-    memory.append({"role": "user", "content": prompt})
-    chat = memory[-6:]  # 最近上下文
+    messages.append({"role": "user", "content": prompt})
+    chat = messages[-2:]  # 最近上下文
 
     data = {
         "model": "Qwen",
@@ -129,41 +139,42 @@ def chat_with_model(user_input, llm_type="chat"):
     }
 
     start_time = time.time()
-    response = requests.post(VLLM_URL, json=data, headers=HEADERS)
+    response = requests.post(url, json=data, headers=headers)
     elapsed = time.time() - start_time
     response.raise_for_status()
     result = response.json()
     assistant_msg = result["choices"][0]["message"]["content"]
 
-    # 尝试解析函数调用
-    func_name, args = parse_llm_output(assistant_msg)
-    if func_name:
-        print(f"[调用工具函数: {func_name}], 参数: {args}")
-        try:
-            func_result = TOOLS[func_name](**args)
-            assistant_msg += f"\n[工具执行结果]: {func_result}"
-        except Exception as e:
-            assistant_msg += f"\n[工具执行失败]: {str(e)}"
+    # 如果是文件操作意图，尝试解析工具调用
+    if is_file_op:
+        func_name, args = parse_llm_output(assistant_msg)
+        if func_name:
+            print(f"[调用工具函数: {func_name}], 参数: {args}")
+            try:
+                func_result = TOOLS[func_name](**args)
+                assistant_msg += f"\n[工具执行结果]: {func_result}"
+            except Exception as e:
+                assistant_msg += f"\n[工具执行失败]: {str(e)}"
 
-    memory.append({"role": "assistant", "content": assistant_msg})
+    messages.append({"role": "assistant", "content": assistant_msg})
     print(f"[耗时 {elapsed:.2f} 秒]")
     print("Assistant:", assistant_msg)
     print("--------------------------------------------------------------------------------")
 
+
 # ---------------- CLI ----------------
 if __name__ == "__main__":
-    print("开始对话（输入 exit 或 quit 退出）")
+    print("开始对话（输入 exit 退出）")
 
-    test_inputs = [
-        "你是谁，你会什么？",
-        "请把 D:\\debug\\output.txt 移动到 D:\\output.txt",
-        "请把 D:\\output.txt 压缩成 D:\\output.zip",
-        "请把 D:\\output.txt 移动到 D:\\debug\\output.txt",
-        "你刚刚做了什么？"
-    ]
-    for inp in test_inputs:
-        llm_type = "file_ops" if re.search(r"(移动|压缩|文件|zip)", inp) else "chat"
-        chat_with_model(inp, llm_type)
+    # 测试单条指令
+    test_inputs = ["你是谁，你会什么？",
+                   "请把 D:\\debug\\output.txt 移动到 D:\\output.txt",
+                   "请把 D:\\output.txt 压缩成 D:\\output.zip",
+                   "请把 D:\\output.txt 移动到 D:\\debug\\output.txt",
+                   "你刚刚做了什么？"
+                   ]
+    for test_input in test_inputs:
+        chat_with_model(test_input)
 
     while True:
         user_input = input("User: ").strip()
@@ -172,5 +183,4 @@ if __name__ == "__main__":
             break
         if user_input == "":
             continue
-        llm_type = "file_ops" if re.search(r"(移动|压缩|文件|zip)", user_input) else "chat"
-        chat_with_model(user_input, llm_type)
+        chat_with_model(user_input)

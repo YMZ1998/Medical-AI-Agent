@@ -35,22 +35,6 @@ TOOLS = {
     "move_file": move_file,
 }
 
-# 参数映射（LLM输出的参数名 → 实际函数参数名）
-PARAM_MAPPING = {
-    "compress_file": {"src_path": "src_path", "dst_path": "dst_path", "source": "src_path", "source_path": "src_path",
-                      "destination_path": "dst_path",
-                      "dest": "dst_path"},
-    "move_file": {"src_path": "src_path", "dst_path": "dst_path", "source": "src_path", "source_path": "src_path",
-                  "dest": "dst_path", "destination_path": "dst_path"},
-}
-
-
-def map_args(func_name, args):
-    if func_name in PARAM_MAPPING:
-        mapping = PARAM_MAPPING[func_name]
-        return {mapping.get(k, k): v for k, v in args.items()}
-    return args
-
 
 # ---------------- 清理 LLM 输出 ----------------
 def clean_llm_json(output_text):
@@ -66,11 +50,37 @@ def parse_llm_output(output_text):
         func_name = cmd.get("function")
         args = cmd.get("args", {})
         if func_name in TOOLS:
-            args = map_args(func_name, args)
             return func_name, args
     except Exception:
         pass
     return None, None
+
+
+from inspect import signature
+
+
+def generate_tool_descriptions(tools: dict):
+    descriptions = []
+    for name, func in tools.items():
+        doc = func.__doc__ or "无描述"
+        try:
+            sig = signature(func)
+            params = ", ".join([p.name for p in sig.parameters.values()])
+            example_args = ", ".join([f'{p.name}="..."' for p in sig.parameters.values()])
+            example = f"{name}({example_args})"
+        except Exception:
+            params = "未知参数"
+            example = name
+        descriptions.append(
+            f"工具名称: {name}\n"
+            f"描述: {doc}\n"
+            f"参数: {params}\n"
+            f"示例: {example}\n"
+        )
+    return "\n".join(descriptions)
+
+
+TOOL_DESCRIPTIONS = generate_tool_descriptions(TOOLS)
 
 
 # ---------------- 主聊天函数 ----------------
@@ -78,10 +88,9 @@ def chat_with_model(user_input):
     print("--------------------------------------------------------------------------------")
     print("User:", user_input)
     # 给 LLM 提示可调用工具
-    tool_descriptions = "\n".join([f"{k}: {TOOLS[k].__doc__}" for k in TOOLS])
     prompt = (
         f"以下是可用工具函数，用户可能会用到它们：\n"
-        f"{tool_descriptions}\n"
+        f"{TOOL_DESCRIPTIONS}\n"
         f"用户指令: {user_input}\n"
         f"如果需要调用工具函数，请严格输出 JSON 格式：{{'function': '...', 'args': {...}}}，"
         f"不要使用单引号，键和值必须用双引号,源文件路径为 src_path，目标文件路径为 dst_path。"
