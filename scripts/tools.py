@@ -1,14 +1,9 @@
-import os
-import shutil
-import zipfile
 import inspect
-import requests
-import time
 import json
-import zipfile
-import shutil
 import os
 import re
+import shutil
+import zipfile
 
 # ---------------- 工具注册系统 ----------------
 TOOLS = {}
@@ -41,6 +36,8 @@ def compress_file(src_path, dst_path):
 @tool("move_file", "移动文件，从src_path到dst_path")
 def move_file(src_path, dst_path):
     """移动文件"""
+    if not os.path.exists(src_path):
+        return f"❌ 文件不存在: {src_path}"
     shutil.move(src_path, dst_path)
     return f"已移动 {src_path} → {dst_path}"
 
@@ -140,14 +137,16 @@ if __name__ == "__main__":
     print("工具描述：\n", TOOL_DESCRIPTIONS)
 
     # 示例：
-    output_text = json.dumps({
-        "function": "move_file",
-        "args": {"src_path": "D:\\output.txt", "dst_path": "D:\\debug\\output.txt"}
-    })
+    output_texts = [
+        json.dumps(
+            {"function": "move_file",
+             "args": {"src_path": "D:\\output.txt", "dst_path": "D:\\debug\\output.txt"}}),
+        json.dumps({
+            "function": "move_file",
+            "args": {"src_path": "D:\\debug\\output.txt", "dst_path": "D:\\output.txt"}})]
 
-    output_text2 = {"function": "move_file",
-                    "args": {"src_path": "D:\\debug\\output.txt", "dst_path": "D:\\output.txt"}}
-    func_name, args = parse_llm_output(output_text)
-    print(f"工具名称: {func_name}, 参数: {args}")
-    result = execute_tool("move_file", **args)
-    print(result)
+    for output_text in output_texts:
+        func_name, args = parse_llm_output(output_text)
+        print(f"工具名称: {func_name}, 参数: {args}")
+        result = execute_tool("move_file", **args)
+        print(result)

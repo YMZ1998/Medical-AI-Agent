@@ -1,14 +1,10 @@
-from inspect import signature
+import json
+import re
+import time
 
 import requests
-import time
-import json
-import zipfile
-import shutil
-import os
-import re
 
-from scripts.tools import TOOLS, TOOL_DESCRIPTIONS, execute_tool, parse_llm_output
+from scripts.tools import TOOL_DESCRIPTIONS, execute_tool, parse_llm_output
 
 # -------------------- 配置 LLM --------------------
 url = "http://localhost:8000/v1/chat/completions"
