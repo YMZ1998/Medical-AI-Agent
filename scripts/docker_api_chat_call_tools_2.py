@@ -8,6 +8,8 @@ import shutil
 import os
 import re
 
+from scripts.tools import TOOLS, TOOL_DESCRIPTIONS, execute_tool, parse_llm_output
+
 # -------------------- 配置 LLM --------------------
 url = "http://localhost:8000/v1/chat/completions"
 headers = {"Content-Type": "application/json"}
@@ -16,46 +18,6 @@ messages = [{"role": "system", "content": (
     "你是一个可以帮助用户聊天的智能助手。不要做任何假设性回答。"
     "当用户指令涉及文件操作时，你可以调用工具函数，但只有必要时才调用。"
 )}]
-
-
-# ---------------- 工具函数注册 ----------------
-def compress_file(src_path, dst_path):
-    """压缩文件为 zip"""
-    with zipfile.ZipFile(dst_path, "w") as zipf:
-        zipf.write(src_path, os.path.basename(src_path))
-    return f"Compressed {src_path} -> {dst_path}"
-
-
-def move_file(src_path, dst_path):
-    """移动文件"""
-    shutil.move(src_path, dst_path)
-    return f"Moved {src_path} -> {dst_path}"
-
-
-TOOLS = {
-    "compress_file": compress_file,
-    "move_file": move_file,
-}
-
-
-# ---------------- 清理 LLM 输出 ----------------
-def clean_llm_json(output_text):
-    cleaned = re.sub(r"```(?:json)?\n?|```", "", output_text).strip()
-    return cleaned
-
-
-# ---------------- 解析 LLM 输出 ----------------
-def parse_llm_output(output_text):
-    output_text = clean_llm_json(output_text)
-    try:
-        cmd = json.loads(output_text)
-        func_name = cmd.get("function")
-        args = cmd.get("args", {})
-        if func_name in TOOLS:
-            return func_name, args
-    except Exception:
-        pass
-    return None, None
 
 
 def detect_intent(user_input):
@@ -85,31 +47,6 @@ def detect_intent(user_input):
         return intent_json.get("intent", "chat")
     except Exception:
         return "chat"
-
-
-def generate_tool_descriptions(tools: dict):
-    descriptions = []
-    for name, func in tools.items():
-        doc = func.__doc__ or "无描述"
-        try:
-            sig = signature(func)
-            params = ", ".join([p.name for p in sig.parameters.values()])
-            example_args = ", ".join([f'{p.name}="..."' for p in sig.parameters.values()])
-            example = f"{name}({example_args})"
-        except Exception:
-            params = "未知参数"
-            example = name
-        descriptions.append(
-            f"工具名称: {name}\n"
-            f"描述: {doc}\n"
-            f"参数: {params}\n"
-            f"示例: {example}\n"
-        )
-    return "\n".join(descriptions)
-
-
-TOOL_DESCRIPTIONS = generate_tool_descriptions(TOOLS)
-print("工具描述：", TOOL_DESCRIPTIONS)
 
 
 # ---------------- 主聊天函数（改造版） ----------------
@@ -159,7 +96,7 @@ def chat_with_model(user_input):
         if func_name:
             print(f"[调用工具函数: {func_name}], 参数: {args}")
             try:
-                func_result = TOOLS[func_name](**args)
+                func_result = execute_tool(func_name, **args)
                 assistant_msg += f"\n[工具执行结果]: {func_result}"
             except Exception as e:
                 assistant_msg += f"\n[工具执行失败]: {str(e)}"
