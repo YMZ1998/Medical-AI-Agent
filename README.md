@@ -32,6 +32,8 @@ This code is based on:
 
 [docker-tutorial](https://www.runoob.com/docker/docker-tutorial.html)
 
+[LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)
+
 ## Environment
 
 

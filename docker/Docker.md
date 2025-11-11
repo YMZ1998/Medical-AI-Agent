@@ -2,6 +2,10 @@
 
 ## 1️⃣ 镜像操作
 
+```commandline
+docker pull vllm/vllm-openai:latest
+```
+
 ```bash
 # 查看本地镜像
 docker images

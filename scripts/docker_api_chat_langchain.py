@@ -11,7 +11,7 @@ from langchain_community.llms.vllm import VLLMOpenAI
 
 # ================= 配置 vLLM =================
 VLLM_BASE = "http://localhost:8000/v1"
-MODEL_NAME = "Qwen"
+MODEL_NAME = "Openai"
 
 llm = VLLMOpenAI(
     openai_api_base=VLLM_BASE,

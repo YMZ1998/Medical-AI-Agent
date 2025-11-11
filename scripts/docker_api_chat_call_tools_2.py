@@ -10,6 +10,8 @@ from scripts.tools import TOOL_DESCRIPTIONS, execute_tool, parse_llm_output
 url = "http://localhost:8000/v1/chat/completions"
 headers = {"Content-Type": "application/json"}
 
+model_name="Openai"
+
 messages = [{"role": "system", "content": (
     "你是一个可以帮助用户聊天的智能助手。不要做任何假设性回答。"
     "当用户指令涉及文件操作时，你可以调用工具函数，但只有必要时才调用。"
@@ -27,14 +29,15 @@ def detect_intent(user_input):
         f"用户指令: {user_input}"
     )
     data = {
-        "model": "Qwen",
+        "model": model_name,
         "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 20,
-        "temperature": 0
+        "max_tokens": 512,
+        "temperature": 0.7
     }
     response = requests.post(url, json=data, headers=headers)
     response.raise_for_status()
     result = response.json()
+    # print("result:", result)
     output_text = result["choices"][0]["message"]["content"]
     # 清理 JSON
     output_text = re.sub(r"```(?:json)?\n?|```", "", output_text).strip()
@@ -73,7 +76,7 @@ def chat_with_model(user_input):
     chat = messages[-5:]  # 最近上下文
 
     data = {
-        "model": "Qwen",
+        "model": model_name,
         "messages": chat,
         "max_tokens": 2048,
         "temperature": 0.7,
@@ -111,6 +114,7 @@ if __name__ == "__main__":
     test_inputs = ["你是谁，你会什么？",
                    "请把 D:\\debug\\output.txt 移动到 D:\\output.txt",
                    "请把 D:\\output.txt 压缩成 D:\\output.zip",
+                   "请读取 D:\\output.txt 打印2行",
                    "请把 D:\\output.txt 移动到 D:\\debug\\output.txt",
                    "你刚刚做了什么？"
                    ]

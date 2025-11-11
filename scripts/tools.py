@@ -43,8 +43,11 @@ def move_file(src_path, dst_path):
 
 
 @tool("read_file", "读取文件并打印前几行内容")
-def read_file(file_path, max_lines=10):
+def read_file(file_path, max_lines):
     """读取文本文件内容并打印前 max_lines 行"""
+    if isinstance(max_lines, str):
+        max_lines = int(max_lines)
+
     if not os.path.exists(file_path):
         return f"❌ 文件不存在: {file_path}"
     try:
@@ -134,13 +137,15 @@ def parse_llm_output(output_text):
 
 # ---------------- 测试 ----------------
 if __name__ == "__main__":
-    print("工具描述：\n", TOOL_DESCRIPTIONS)
+    print("工具描述: \n", TOOL_DESCRIPTIONS)
 
     # 示例：
     output_texts = [
         json.dumps(
             {"function": "move_file",
              "args": {"src_path": "D:\\output.txt", "dst_path": "D:\\debug\\output.txt"}}),
+        json.dumps(
+            {"function": "read_file", "args": {"file_path": "D:\\debug\\output.txt", "max_lines": "10"}}),
         json.dumps({
             "function": "move_file",
             "args": {"src_path": "D:\\debug\\output.txt", "dst_path": "D:\\output.txt"}})]
@@ -148,5 +153,5 @@ if __name__ == "__main__":
     for output_text in output_texts:
         func_name, args = parse_llm_output(output_text)
         print(f"工具名称: {func_name}, 参数: {args}")
-        result = execute_tool("move_file", **args)
+        result = execute_tool(func_name, **args)
         print(result)

@@ -10,7 +10,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 # model_name = "Qwen/Qwen2.5-7B-Instruct"
 # model_name = "IDEA-CCNL/Ziya-LLaMA-13B-v1"
 # model_name = "medalpaca/medalpaca-7b"
-model_name = "Intelligent-Internet/II-Medical-8B-1706"
+# model_name = "Intelligent-Internet/II-Medical-8B-1706"
+model_name = "openai/gpt-oss-20b"
 cache_dir = "D:/huggingface_cache"
 local_dir=os.path.join(cache_dir, model_name.split("/")[-1])
 os.makedirs(local_dir, exist_ok=True)

@@ -1,5 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
+
+
 def main():
     model_name = "deepseek-ai/deepseek-math-7b-base"
 

@@ -13,7 +13,7 @@ def chat_with_model(user_input):
     messages.append({"role": "user", "content": user_input})
     chat = messages[-2:]
     data = {
-        "model": "Qwen",
+        "model": "Openai",
         "messages": chat,
         "max_tokens": 512,
         "temperature": 0.7,
@@ -25,7 +25,7 @@ def chat_with_model(user_input):
 
     response.raise_for_status()
     result = response.json()
-
+    print("result:", result)
     assistant_msg = result["choices"][0]["message"]["content"]
     messages.append({"role": "assistant", "content": assistant_msg})
 
