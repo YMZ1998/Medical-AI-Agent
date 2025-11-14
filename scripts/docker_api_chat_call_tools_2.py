@@ -29,7 +29,6 @@ def detect_intent(user_input):
         f"用户指令: {user_input}"
     )
     data = {
-        "model": model_name,
         "messages": [{"role": "user", "content": prompt}],
         "max_tokens": 512,
         "temperature": 0.7
@@ -76,7 +75,6 @@ def chat_with_model(user_input):
     chat = messages[-5:]  # 最近上下文
 
     data = {
-        "model": model_name,
         "messages": chat,
         "max_tokens": 2048,
         "temperature": 0.7,

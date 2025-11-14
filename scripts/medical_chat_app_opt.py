@@ -29,9 +29,8 @@ def medical_chat_fn(user_input, chat_history, template_type, context, messages_s
     messages.append({"role": "user", "content": user_input})
 
     data = {
-        "model": "Qwen",
         "messages": messages[-2:],
-        "max_tokens": 512,
+        "max_tokens": 5120,
         "temperature": 0.7,
     }
 
@@ -63,6 +62,7 @@ with gr.Blocks() as demo:
             label="🧩 选择提示词模板",
             choices=["default", "case_summary", "general", "diagnosis", "drug"],
             value="default",
+            height=200,
         )
         context_box = gr.Textbox(
             label="📄 上下文（可选）",
@@ -74,7 +74,7 @@ with gr.Blocks() as demo:
         label="👨‍⚕️ Assistant",
         show_copy_button=True,
         show_share_button=True,
-        height=800,
+        height=600,
     )
 
     with gr.Row():

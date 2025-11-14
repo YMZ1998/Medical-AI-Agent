@@ -13,9 +13,8 @@ def chat_with_model(user_input):
     messages.append({"role": "user", "content": user_input})
     chat = messages[-2:]
     data = {
-        "model": "Openai",
         "messages": chat,
-        "max_tokens": 512,
+        "max_tokens": 10240,
         "temperature": 0.7,
     }
 

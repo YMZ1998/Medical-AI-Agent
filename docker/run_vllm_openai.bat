@@ -42,7 +42,7 @@ echo.
 echo 启动 vLLM 容器（后台运行）...
 echo 模型路径: %MODEL_DIR%
 echo 容器名: %CONTAINER_NAME%
-echo 端口映射: %PORT% -> 8000
+echo 端口映射: %PORT%
 echo 镜像: %IMAGE%
 echo 访问地址: http://localhost:%PORT%
 echo.
@@ -56,10 +56,10 @@ docker run -d --gpus all --name %CONTAINER_NAME% ^
   --model /model ^
   --served-model-name Openai ^
   --host 0.0.0.0 ^
-  --port 8000 ^
+  --port %PORT% ^
   --gpu-memory-utilization 0.8 ^
   --tensor-parallel-size 1 ^
-  --max-model-len 4096 ^
+  --max-model-len 40960 ^
   --max-num-seqs 32 ^
   --swap-space 20
 

@@ -102,7 +102,6 @@ def chat_with_model(user_input):
     chat = messages[-2:]  # 最近上下文
 
     data = {
-        "model": "Qwen",
         "messages": chat,
         "max_tokens": 512,
         "temperature": 0.7,
